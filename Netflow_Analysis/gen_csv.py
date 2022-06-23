@@ -1,4 +1,4 @@
-# Author: Yebo Feng
+# Yebo Feng
 
 import os
 import time
