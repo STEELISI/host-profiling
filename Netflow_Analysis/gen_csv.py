@@ -44,7 +44,6 @@ def get_general_info(file):
     ## id,first,msec_first,Last,msec_last,Flows,Flows_tcp,Flows_udp,Flows_icmp,Flows_other,Packets,Packets_tcp,Packets_udp,Packets_icmp,Packets_other,Bytes,Bytes_tcp,Bytes_udp,Bytes_icmp,Bytes_other
     general_info = []
     general_info.append(file.split('nfcapd.')[1])
-
     command = "nfdump -r" + file + " -I -N"
     result = run_bash(command,1)
     results = result.split('\n')
@@ -105,7 +104,7 @@ def test():
     print(get_ports_info("/data/2020/04/06/nfcapd.202004060505",[123,23,80]))
 
 if __name__=="__main__":
-    files = get_files('/data/2020')
+    files = get_files('/Users/yebof/Documents/data')
     for f in files:
         record = get_general_info(f)
         for p in pa.ports:
