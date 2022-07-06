@@ -3,8 +3,10 @@
 
 import SubnetTree
 
-def read():
-    f = open('localprefs.frgp','r')
+def read(prefix_list='localprefs.frgp'):
+    # read specified prefix list
+    # default = localprefs.frgp
+    f = open(prefix_list,'r')
     text = f.readlines()
     f.close()
     networks = []
@@ -23,7 +25,9 @@ def read_build_tree():
 
 if __name__ == "__main__":
     # test whether the prefixes are read correctly
-    t = build_tree(read())
+    # t = build_tree(read())
+    t = build_tree(read('localprefs.frgp'))
+
     # test cases
     print(b'192.0.2.10' in t) # False
     print(b'142.48.190.1' in t) # True
