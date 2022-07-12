@@ -1,1 +1,3 @@
-nfdump -r nfcapd.202004221040
+nfdump
+-r
+nfcapd.202004221040

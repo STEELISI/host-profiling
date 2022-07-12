@@ -1,0 +1,7 @@
+nfdump
+-r 
+/Volumes/Laiky/FRGP_Netflow_ISI/validate/17/nfcapd.202008170000
+-o
+"fmt:%ts|%te|%td|%sap|%dap|%pr|%flg|%pkt|%byt"
+-q
+'src ip 14.181.115.216 or dst ip 14.181.115.216'
