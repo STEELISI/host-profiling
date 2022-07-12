@@ -6,6 +6,7 @@ import SubnetTree
 import utilities as ut
 
 def if_monitor(ip1,ip2):
+    # check whether one of the two IP addresses are within the defined prefixes 
     # return 1 if the first ip is in the prefixes but the second is not
     # return 2 if the second ip is in the prefixes but the first is not
 
@@ -20,6 +21,7 @@ def if_monitor(ip1,ip2):
 
 def profile_build(flow_list):
     global profile_dict
+
     for record in flow_list:
         items = record.split("|")
 
@@ -32,10 +34,35 @@ def profile_build(flow_list):
         ip2 = ip2_and_port[0]
         ip2_port = ip2_and_port[1]
         # print(ip1, ip1_port, ip2, ip2_port)
-    return []
+        start_time = items[0].strip()
+        end_time = items[1].strip()
+        duration = float(items[2].strip())
+        pkts = int(items[7].strip())
+        bytes = int(items[8].strip())
+        # print(start_time, end_time, duration, pkts, bytes)
+
+        # 1 if the first ip is in the prefixes but the second is not
+        # 2 if the second ip is in the prefixes but the first is not
+        # 0 if all the ips are in the prefixes or none of the ips are in the prefixes
+        # we will skip case 0 
+        prefix_flag = if_monitor(ip1, ip2)
+        if prefix_flag == 0:
+            continue
+        if prefix_flag == 1:
+            add_outbound_record(start_time, end_time, duration, ip1, ip1_port, ip2, ip2_port, pkts, bytes)
+        if prefix_flag == 2:
+            add_inbound_record(start_time, end_time, duration, ip1, ip1_port, ip2, ip2_port, pkts, bytes)
+
+
+def add_outbound_record(start_time, end_time, duration, ip1, ip1_port, ip2, ip2_port, pkts, bytes):
+    print("Outbound record added!")
+
+def add_inbound_record(start_time, end_time, duration, ip1, ip1_port, ip2, ip2_port, pkts, bytes):
+    print("Inbound record added!")
 
 def run_bash(command,opt):
-
+    # take a command, run it, and get the output 
+    
     # simple output 
     if opt == 1:
         commands = command.split(' ')
@@ -79,5 +106,6 @@ if __name__ == "__main__":
     except Exception as e:
         print("An exception occurred when inputting the NetFlow data!")
         print(e)
-
+    
+    # build profiles from the netflow data 
     profile_build(NF_input)
