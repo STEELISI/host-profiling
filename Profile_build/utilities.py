@@ -10,11 +10,16 @@ def read_command(filename):
 
 def datetime_to_timestamp(time_str):
     # convert a datetime string to timestamp
-    # example: "2020-08-16 23:04:29.056" 
+    # example: "2020-08-16 23:04:29.056" => 1597644269.056
     # 
     # dtime = datetime(2020, 8, 16, 23, 4, int(29.056))
 
-    dtime = datetime.strptime(time_str, '%Y-%m-%d %H:%M:%S.%f')
+    # add the time zone information
+    # I am reading this from Eugene during the summer, so the time zone is -0700
+    # please change this accordingly, otherwise the program cannot be correct
+    time_str = time_str + ":-0800"
+
+    dtime = datetime.strptime(time_str, '%Y-%m-%d %H:%M:%S.%f:%z')
 
     timestamp = dtime.timestamp()
     print(timestamp)
