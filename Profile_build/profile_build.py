@@ -77,8 +77,16 @@ def update_inbound_record(start_time, end_time, duration, ip1, ip1_port, ip2, ip
         # The first sub_dict is for outbound traffic
         # The second sub_dict is for inbound traffic 
         profile_build[ip2]=[dict(),dict()]
-        
+
     print("Inbound record added!")
+
+def port_mapping(port):
+    # 0 <= p < 200 : every 10;
+    # 200 <= p < 1000: every 100;
+    # 1000 <= p < 16000: every 1000;
+    # 16000 <= p < 30000: every 2000;
+    # 30000 <= p: all.
+    return 100
 
 def run_bash(command,opt):
     # take a command, run it, and get the output 
