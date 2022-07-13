@@ -1,4 +1,6 @@
 from datetime import datetime
+from datetime import timezone
+from datetime import timedelta
 
 def read_command(filename):
     # read nfdump command 
@@ -17,12 +19,23 @@ def datetime_to_timestamp(time_str):
     # add the time zone information
     # I am reading this from Eugene during the summer, so the time zone is -0700
     # please change this accordingly, otherwise the program cannot be correct
-    time_str = time_str + ":-0800"
+    time_str = time_str + ":-0700"
 
     dtime = datetime.strptime(time_str, '%Y-%m-%d %H:%M:%S.%f:%z')
 
     timestamp = dtime.timestamp()
-    print(timestamp)
+    # print(timestamp)
+    return timestamp
+
+def timestamp_to_datetime(ts):
+    # convert a timestamp to datetime string
+    # example: 1597644269.056 => "2020-08-16 23:04:29.056"
+
+    # the Netflow is from FRGP, whose timezone is -6 
+    # please change this accordingly, otherwise the program cannot be correct
+    timezone_offset = timedelta(hours = -6)
+    dt_obj = datetime.fromtimestamp(ts, tz=timezone(timezone_offset))
+    return dt_obj
 
 if __name__ == "__main__":
     # for test
