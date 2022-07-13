@@ -84,9 +84,36 @@ def port_mapping(port):
     # 0 <= p < 200 : every 10;
     # 200 <= p < 1000: every 100;
     # 1000 <= p < 16000: every 1000;
-    # 16000 <= p < 30000: every 2000;
-    # 30000 <= p: all.
-    return 100
+    # 16000 <= p < 20000: every 2000;
+    # 20000 <= p: all.
+
+    port_num = int(port)
+
+    # 0-1000: 
+    if port_num < 1000:
+        # 0-200: 
+        if port_num < 200:
+            down_num = int(port_num/10) * 10
+            up_num = int(port_num/10) * 10 + 10
+        # 200-1000: 
+        else:
+            down_num = int(port_num/100) * 100
+            up_num = int(port_num/100) * 100 + 100
+    # 1000-:
+    else:
+        # 1000-16000:
+        if port_num < 16000:
+            down_num = int(port_num/1000) * 1000
+            up_num = int(port_num/1000) * 1000 + 1000
+        # 16000-20000:
+        elif port_num < 20000:
+            down_num = int(port_num/2000) * 2000
+            up_num = int(port_num/2000) * 2000 + 2000
+        # 20000-:
+        else:
+            return "20000-"
+
+    return str(down_num)+'-'+str(up_num)
 
 def run_bash(command,opt):
     # take a command, run it, and get the output 
