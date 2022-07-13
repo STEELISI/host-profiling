@@ -81,6 +81,8 @@ def update_inbound_record(start_time, end_time, duration, ip1, ip1_port, ip2, ip
     print("Inbound record added!")
 
 def port_mapping(port):
+    # map the port number to a port range
+
     # 0 <= p < 200 : every 10;
     # 200 <= p < 1000: every 100;
     # 1000 <= p < 16000: every 1000;
@@ -114,6 +116,14 @@ def port_mapping(port):
             return "20000-"
 
     return str(down_num)+'-'+str(up_num)
+
+def time_mapping(time_input):
+    # map the timestamp to 5 minutes (300s) round 
+
+    down_time = int(time_input/300) * 300
+    up_time = int(time_input/300) * 300 + 300
+
+    return down_time,up_time
 
 def run_bash(command,opt):
     # take a command, run it, and get the output 
