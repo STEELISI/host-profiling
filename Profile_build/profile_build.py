@@ -20,7 +20,7 @@ def if_monitor(ip1,ip2):
     return 0
 
 def profile_build(flow_list):
-    global profile_dict
+    # global profile_dict
 
     for record in flow_list:
         items = record.split("|")
@@ -49,20 +49,40 @@ def profile_build(flow_list):
         if prefix_flag == 0:
             continue
         if prefix_flag == 1:
-            add_outbound_record(start_time, end_time, duration, ip1, ip1_port, ip2, ip2_port, pkts, bytes)
+            update_outbound_record(start_time, end_time, duration, ip1, ip1_port, ip2, ip2_port, pkts, bytes)
         if prefix_flag == 2:
-            add_inbound_record(start_time, end_time, duration, ip1, ip1_port, ip2, ip2_port, pkts, bytes)
+            update_inbound_record(start_time, end_time, duration, ip1, ip1_port, ip2, ip2_port, pkts, bytes)
 
 
-def add_outbound_record(start_time, end_time, duration, ip1, ip1_port, ip2, ip2_port, pkts, bytes):
+def update_outbound_record(start_time, end_time, duration, ip1, ip1_port, ip2, ip2_port, pkts, bytes):
+    global profile_dict
+    if ip1 not in profile_dict:
+        # initialize the profile for ip1
+        # 
+        # each profile is a dictionary
+        # {IP:[dict(), dict()]}
+        # The first sub_dict is for outbound traffic
+        # The second sub_dict is for inbound traffic 
+        profile_build[ip1]=[dict(),dict()]
+
     print("Outbound record added!")
 
-def add_inbound_record(start_time, end_time, duration, ip1, ip1_port, ip2, ip2_port, pkts, bytes):
+def update_inbound_record(start_time, end_time, duration, ip1, ip1_port, ip2, ip2_port, pkts, bytes):
+    global profile_dict
+    if ip2 not in profile_dict:
+        # initialize the profile for ip1
+        # 
+        # each profile is a dictionary
+        # {IP:[dict(), dict()]}
+        # The first sub_dict is for outbound traffic
+        # The second sub_dict is for inbound traffic 
+        profile_build[ip2]=[dict(),dict()]
+        
     print("Inbound record added!")
 
 def run_bash(command,opt):
     # take a command, run it, and get the output 
-    
+
     # simple output 
     if opt == 1:
         commands = command.split(' ')
