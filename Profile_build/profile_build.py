@@ -255,7 +255,7 @@ def process_single_command():
         NF_input = NF_input.strip().split("\n")
         print("NetFlow input successfully!")
     except Exception as e:
-        print("An exception occurred when inputting the NetFlow data!")
+        print("An exception occurred when building profiles from the NetFlow data!")
         print(e)
     
     # build profiles from the netflow data 
@@ -314,7 +314,7 @@ def process_multiple_commands():
             print("~"*10 + " Profiles built for " + file + " " + "~"*10)
             print("~"*10 + " Toke " + str(runtime) +"s " + "~"*10)
     except Exception as e:
-        print("An exception occurred when inputting the NetFlow data!")
+        print("An exception occurred when building profiles from the NetFlow data!")
         print(e)
 
     # print(profile_dict)
