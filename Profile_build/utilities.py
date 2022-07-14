@@ -1,3 +1,4 @@
+from calendar import day_abbr
 from datetime import datetime
 from datetime import timezone
 from datetime import timedelta
@@ -37,10 +38,31 @@ def timestamp_to_datetime(ts):
     timezone_offset = timedelta(hours = -6)
     datetime_obj = datetime.fromtimestamp(ts, tz=timezone(timezone_offset))
 
+    # return datetime_obj
     return str(datetime_obj.strftime("%H:%M"))
 
+def time_round_day(ts):
+    # the Netflow is from FRGP, whose timezone is -6 
+    # please change this accordingly, otherwise the program cannot be correct
+    offset = (-6) * 3600
+
+    down_ts = int((ts + offset)/86400) * 86400 - offset
+    up_ts = down_ts + 86400
+
+    return down_ts, up_ts
+    # return timestamp_to_datetime(down_ts),timestamp_to_datetime(up_ts)
+
+def time_round_day_datetime(date_str):
+    # given a datetime, round the starting and ending timestamp of the day
+    # "20200817-0600" =>  (1597644000, 1597730400)
+    
+    dtime = datetime.strptime(date_str, '%Y%m%d%z')
+    timestamp = dtime.timestamp()
+    return time_round_day(timestamp)
+
 if __name__ == "__main__":
-    # for test
+    print("Testing ...")
+
     # print(read_command("/Users/yebof/Documents/host-profiling/Profile_build/NFDUMP_command/read_single_defined.txt"))
 
     datetime_to_timestamp("2020-08-16 23:04:29.056")

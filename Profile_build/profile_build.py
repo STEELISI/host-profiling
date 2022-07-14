@@ -1,6 +1,8 @@
 # Yebo Feng
 
 import subprocess
+
+from numpy import byte
 import read_network as rn
 import SubnetTree
 import utilities as ut
@@ -48,40 +50,93 @@ def profile_build(flow_list):
         prefix_flag = if_monitor(ip1, ip2)
         if prefix_flag == 0:
             continue
-        if prefix_flag == 1:
-            update_outbound_record(start_time, end_time, duration, ip1, ip1_port, ip2, ip2_port, pkts, bytes)
-        if prefix_flag == 2:
-            update_inbound_record(start_time, end_time, duration, ip1, ip1_port, ip2, ip2_port, pkts, bytes)
+        else:
+            update_record(prefix_flag, start_time, end_time, duration, ip1, ip1_port, ip2, ip2_port, pkts, bytes)
 
 
-def update_outbound_record(start_time, end_time, duration, ip1, ip1_port, ip2, ip2_port, pkts, bytes):
+def update_record(direction_flag, start_time, end_time, duration, ip1, ip1_port, ip2, ip2_port, pkts, bytes):
     global profile_dict
-    if ip1 not in profile_dict:
-        # initialize the profile for ip1
-        # 
-        # each profile is a dictionary
-        # {IP:[dict(), dict()]}
-        # The first sub_dict is for outbound traffic
-        # The second sub_dict is for inbound traffic 
-        profile_build[ip1]=[dict(),dict()]
+    if direction_flag == 1:
+        if ip1 not in profile_dict:
+            # initialize the profile for ip1
+            # 
+            # each profile is a dictionary
+            # {IP:[dict(), dict()]}
+            # The first sub_dict is for outbound traffic
+            # The second sub_dict is for inbound traffic 
+            profile_dict[ip1]=[dict(),dict()]
 
-    print("Outbound record added!")
+        start_timestamp = ut.datetime_to_timestamp(start_time)
+        end_timestamp = ut.datetime_to_timestamp(end_time)
 
-def update_inbound_record(start_time, end_time, duration, ip1, ip1_port, ip2, ip2_port, pkts, bytes):
+        # the duration of flow is 0
+        if duration == 0:
+            add_record_to_profile(direction_flag, start_timestamp, ip1, ip1_port, pkts, bytes)
+        
+        # the duration of flow is between 0 to 300
+        # may cross two units 
+        elif duration <= 300:
+            start_s, end_s = time_mapping(start_timestamp)
+            start_e, end_e = time_mapping(end_timestamp)
+
+            # only within one unit 
+            if start_s == start_e:
+                add_record_to_profile(direction_flag, start_timestamp, ip1, ip1_port, pkts, bytes)
+            
+            # cross two units 
+            else:
+                duration1 = end_s - start_timestamp
+                # duration2 = duration - duration1
+                pkts1 = (duration1/duration) * pkts
+                pkts2 = pkts - pkts1
+                bytes1 = (duration1/duration) * bytes
+                bytes2 = bytes - bytes2
+                if end_s > profile_date_down_ts:
+                    add_record_to_profile(direction_flag, start_timestamp, ip1, ip1_port, pkts1, bytes1)
+                if end_e > profile_date_down_ts:
+                    add_record_to_profile(direction_flag, end_timestamp, ip1, ip1_port, pkts2, bytes2)
+        
+        # cross more than two units 
+        else:
+            start_s, end_s = time_mapping(start_timestamp)
+            start_e, end_e = time_mapping(end_timestamp)
+            duration1 = end_s - start_timestamp
+            duration2 = end_time - start_e
+            pkts1 = (duration1/duration) * pkts
+            pkts2 = (duration2/duration) * pkts
+            bytes1 = (duration1/duration) * bytes
+            bytes2 = (duration2/duration) * bytes
+            if end_s > profile_date_down_ts:
+                    add_record_to_profile(direction_flag, start_timestamp, ip1, ip1_port, pkts1, bytes1)
+            if end_e > profile_date_down_ts:
+                    add_record_to_profile(direction_flag, end_timestamp, ip1, ip1_port, pkts2, bytes2)                              
+
+
+def add_record_to_profile(direction_flag, timestamp, ip, ip_port, pkts, bytes):
+    # add the given information to the profile 
     global profile_dict
-    if ip2 not in profile_dict:
-        # initialize the profile for ip1
-        # 
-        # each profile is a dictionary
-        # {IP:[dict(), dict()]}
-        # The first sub_dict is for outbound traffic
-        # The second sub_dict is for inbound traffic 
-        profile_build[ip2]=[dict(),dict()]
+    start, end = time_mapping(timestamp)
+    record_key = ut.timestamp_to_datetime(start) + "-" + ut.timestamp_to_datetime(end) + "|" + port_mapping(ip_port)
 
-    print("Inbound record added!")
+    # outbound traffic 
+    if direction_flag == 1:
+        if record_key in profile_build[ip][0]:
+            temp = profile_build[ip][0][record_key]
+            profile_build[ip][0][record_key] = [temp[0] + pkts, temp[1] + bytes]
+        else:
+            profile_build[ip][0][record_key] = [pkts, bytes]
+
+    # inbound traffic
+    else:
+        if record_key in profile_build[ip][1]:
+            temp = profile_build[ip][1][record_key]
+            profile_build[ip][1][record_key] = [temp[0] + pkts, temp[1] + bytes]
+        else:
+            profile_build[ip][1][record_key] = [pkts, bytes]
+
 
 def port_mapping(port):
-    # map the port number to a port range
+    # map the port number to a port range (string)
 
     # 0 <= p < 200 : every 10;
     # 200 <= p < 1000: every 100;
@@ -143,6 +198,13 @@ def run_bash(command,opt):
         return output.decode('utf-8').strip()
 
 if __name__ == "__main__":
+
+    # which date the profile is
+    global profile_date
+    global profile_date_down_ts
+    global profile_date_up_ts  
+    profile_date = "20200817-0600"
+    profile_date_down_ts, profile_date_up_ts = ut.time_round_day_datetime(profile_date)
 
     # initialize the profile dictionary
     global profile_dict
