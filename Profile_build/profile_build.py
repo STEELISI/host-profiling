@@ -123,6 +123,7 @@ def time_mapping(time_input):
     down_time = int(time_input/300) * 300
     up_time = int(time_input/300) * 300 + 300
 
+    # return two integers
     return down_time,up_time
 
 def run_bash(command,opt):

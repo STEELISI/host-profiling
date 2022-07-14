@@ -28,14 +28,16 @@ def datetime_to_timestamp(time_str):
     return timestamp
 
 def timestamp_to_datetime(ts):
-    # convert a timestamp to datetime string
+    # convert a timestamp to datetime string and further convert it to the time format we need
     # example: 1597644269.056 => "2020-08-16 23:04:29.056"
+    # 00:04
 
     # the Netflow is from FRGP, whose timezone is -6 
     # please change this accordingly, otherwise the program cannot be correct
     timezone_offset = timedelta(hours = -6)
-    dt_obj = datetime.fromtimestamp(ts, tz=timezone(timezone_offset))
-    return dt_obj
+    datetime_obj = datetime.fromtimestamp(ts, tz=timezone(timezone_offset))
+
+    return str(datetime_obj.strftime("%H:%M"))
 
 if __name__ == "__main__":
     # for test
