@@ -5,4 +5,3 @@ nfdump
 "fmt:%ts|%te|%td|%sap|%dap|%pr|%flg|%pkt|%byt"
 -q
 -N
-'src ip 14.181.115.216 or dst ip 14.181.115.216'

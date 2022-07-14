@@ -2,6 +2,20 @@ from calendar import day_abbr
 from datetime import datetime
 from datetime import timezone
 from datetime import timedelta
+import os
+
+def get_files(path):
+    # path = '/data/2019'
+    files = []
+    ## r=root, d=directories, f = files
+    for r, d, f in os.walk(path):
+        for file in f:
+            if 'nfcapd.' in file:
+                files.append(os.path.join(r, file))
+    # for f in files:
+    #     print(f)
+
+    return files
 
 def read_command(filename):
     # read nfdump command 
@@ -55,7 +69,7 @@ def time_round_day(ts):
 def time_round_day_datetime(date_str):
     # given a datetime, round the starting and ending timestamp of the day
     # "20200817-0600" =>  (1597644000, 1597730400)
-    
+
     dtime = datetime.strptime(date_str, '%Y%m%d%z')
     timestamp = dtime.timestamp()
     return time_round_day(timestamp)

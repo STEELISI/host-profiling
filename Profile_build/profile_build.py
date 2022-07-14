@@ -1,11 +1,10 @@
 # Yebo Feng
 
 import subprocess
-
-from numpy import byte
 import read_network as rn
 import SubnetTree
 import utilities as ut
+import time
 
 def if_monitor(ip1,ip2):
     # check whether one of the two IP addresses are within the defined prefixes 
@@ -25,6 +24,7 @@ def profile_build(flow_list):
     # global profile_dict
 
     for record in flow_list:
+        # print(record)
         items = record.split("|")
 
         # ip1 is the source ip 
@@ -56,60 +56,82 @@ def profile_build(flow_list):
 
 def update_record(direction_flag, start_time, end_time, duration, ip1, ip1_port, ip2, ip2_port, pkts, bytes):
     global profile_dict
+    global profile_date_down_ts
+    global profile_date_up_ts
+
+    # figure out the direction of the flow 
     if direction_flag == 1:
-        if ip1 not in profile_dict:
-            # initialize the profile for ip1
-            # 
-            # each profile is a dictionary
-            # {IP:[dict(), dict()]}
-            # The first sub_dict is for outbound traffic
-            # The second sub_dict is for inbound traffic 
-            profile_dict[ip1]=[dict(),dict()]
+        profile_ip = ip1
+        profile_port = ip1_port
+    else:
+        profile_ip = ip2
+        profile_port = ip2_port
 
-        start_timestamp = ut.datetime_to_timestamp(start_time)
-        end_timestamp = ut.datetime_to_timestamp(end_time)
+    if profile_ip not in profile_dict:
+        # initialize the profile for ip1
+        # 
+        # each profile is a dictionary
+        # {IP:[dict(), dict()]}
+        # The first sub_dict is for outbound traffic
+        # The second sub_dict is for inbound traffic 
+        profile_dict[profile_ip]=[dict(),dict()]
 
-        # the duration of flow is 0
-        if duration == 0:
-            add_record_to_profile(direction_flag, start_timestamp, ip1, ip1_port, pkts, bytes)
+    start_timestamp = ut.datetime_to_timestamp(start_time)
+    end_timestamp = ut.datetime_to_timestamp(end_time)
+
+    # the duration of flow is 0
+    if duration == 0:
+        if profile_date_down_ts <= start_timestamp < profile_date_up_ts:
+            add_record_to_profile(direction_flag, start_timestamp, profile_ip, profile_port, pkts, bytes)
+    
+    # the duration of flow is between 0 to 300
+    # may cross two units 
+    elif duration <= 300:
+        start_s, end_s = time_mapping(start_timestamp)
+        start_e, end_e = time_mapping(end_timestamp)
+
+        # only within one unit 
+        if start_s == start_e:
+            if profile_date_down_ts <= start_timestamp < profile_date_up_ts:
+                add_record_to_profile(direction_flag, start_timestamp, profile_ip, profile_port, pkts, bytes)
         
-        # the duration of flow is between 0 to 300
-        # may cross two units 
-        elif duration <= 300:
-            start_s, end_s = time_mapping(start_timestamp)
-            start_e, end_e = time_mapping(end_timestamp)
-
-            # only within one unit 
-            if start_s == start_e:
-                add_record_to_profile(direction_flag, start_timestamp, ip1, ip1_port, pkts, bytes)
-            
-            # cross two units 
-            else:
-                duration1 = end_s - start_timestamp
-                # duration2 = duration - duration1
-                pkts1 = (duration1/duration) * pkts
-                pkts2 = pkts - pkts1
-                bytes1 = (duration1/duration) * bytes
-                bytes2 = bytes - bytes2
-                if end_s > profile_date_down_ts:
-                    add_record_to_profile(direction_flag, start_timestamp, ip1, ip1_port, pkts1, bytes1)
-                if end_e > profile_date_down_ts:
-                    add_record_to_profile(direction_flag, end_timestamp, ip1, ip1_port, pkts2, bytes2)
-        
-        # cross more than two units 
+        # cross two units 
         else:
-            start_s, end_s = time_mapping(start_timestamp)
-            start_e, end_e = time_mapping(end_timestamp)
             duration1 = end_s - start_timestamp
-            duration2 = end_time - start_e
+            # duration2 = duration - duration1
             pkts1 = (duration1/duration) * pkts
-            pkts2 = (duration2/duration) * pkts
+            pkts2 = pkts - pkts1
             bytes1 = (duration1/duration) * bytes
-            bytes2 = (duration2/duration) * bytes
-            if end_s > profile_date_down_ts:
-                    add_record_to_profile(direction_flag, start_timestamp, ip1, ip1_port, pkts1, bytes1)
-            if end_e > profile_date_down_ts:
-                    add_record_to_profile(direction_flag, end_timestamp, ip1, ip1_port, pkts2, bytes2)                              
+            bytes2 = bytes - bytes1
+            if profile_date_down_ts < end_s <= profile_date_up_ts:
+                add_record_to_profile(direction_flag, start_timestamp, profile_ip, profile_port, pkts1, bytes1)
+            if profile_date_down_ts < end_e <= profile_date_up_ts:
+                add_record_to_profile(direction_flag, end_timestamp, profile_ip, profile_port, pkts2, bytes2)
+    
+    # cross more than two units 
+    else:
+        start_s, end_s = time_mapping(start_timestamp)
+        start_e, end_e = time_mapping(end_timestamp)
+        duration1 = end_s - start_timestamp
+        duration2 = end_timestamp - start_e
+        pkts1 = (duration1/duration) * pkts
+        pkts2 = (duration2/duration) * pkts
+        bytes1 = (duration1/duration) * bytes
+        bytes2 = (duration2/duration) * bytes
+        if profile_date_down_ts < end_s <= profile_date_up_ts:
+                add_record_to_profile(direction_flag, start_timestamp, profile_ip, profile_port, pkts1, bytes1)
+        if profile_date_down_ts < end_e <= profile_date_up_ts:
+                add_record_to_profile(direction_flag, end_timestamp, profile_ip, profile_port, pkts2, bytes2)
+        if end_s != start_e:
+            pkts_middle = (300/duration) * pkts
+            bytes_middle = (300/duration) * bytes
+            times = int((start_e-end_s)/300)
+            position_time = end_s
+            # print(times)
+            for i in range(times):
+                if profile_date_down_ts <= position_time < profile_date_up_ts:
+                    add_record_to_profile(direction_flag, position_time, profile_ip, profile_port, pkts_middle,bytes_middle)
+                position_time += 300
 
 
 def add_record_to_profile(direction_flag, timestamp, ip, ip_port, pkts, bytes):
@@ -120,19 +142,19 @@ def add_record_to_profile(direction_flag, timestamp, ip, ip_port, pkts, bytes):
 
     # outbound traffic 
     if direction_flag == 1:
-        if record_key in profile_build[ip][0]:
-            temp = profile_build[ip][0][record_key]
-            profile_build[ip][0][record_key] = [temp[0] + pkts, temp[1] + bytes]
+        if record_key in profile_dict[ip][0]:
+            temp = profile_dict[ip][0][record_key]
+            profile_dict[ip][0][record_key] = [temp[0] + pkts, temp[1] + bytes]
         else:
-            profile_build[ip][0][record_key] = [pkts, bytes]
+            profile_dict[ip][0][record_key] = [pkts, bytes]
 
     # inbound traffic
     else:
-        if record_key in profile_build[ip][1]:
-            temp = profile_build[ip][1][record_key]
-            profile_build[ip][1][record_key] = [temp[0] + pkts, temp[1] + bytes]
+        if record_key in profile_dict[ip][1]:
+            temp = profile_dict[ip][1][record_key]
+            profile_dict[ip][1][record_key] = [temp[0] + pkts, temp[1] + bytes]
         else:
-            profile_build[ip][1][record_key] = [pkts, bytes]
+            profile_dict[ip][1][record_key] = [pkts, bytes]
 
 
 def port_mapping(port):
@@ -144,7 +166,7 @@ def port_mapping(port):
     # 16000 <= p < 20000: every 2000;
     # 20000 <= p: all.
 
-    port_num = int(port)
+    port_num = int(float(port))
 
     # 0-1000: 
     if port_num < 1000:
@@ -197,7 +219,7 @@ def run_bash(command,opt):
         p_status = p.wait()
         return output.decode('utf-8').strip()
 
-if __name__ == "__main__":
+def process_single_command():
 
     # which date the profile is
     global profile_date
@@ -216,7 +238,8 @@ if __name__ == "__main__":
 
     # read command 
     try:
-        command = ut.read_command("/Users/yebof/Documents/host-profiling/Profile_build/NFDUMP_command/read_single_defined.txt")
+        # command = ut.read_command("/Users/yebof/Documents/host-profiling/Profile_build/NFDUMP_command/read_single_defined.txt")
+        command = ut.read_command("/Users/yebof/Documents/host-profiling/Profile_build/NFDUMP_command/read_single.txt")
         command = ' '.join(command)
         print("Successfully read the command:")
         print("\t"+command)
@@ -237,3 +260,66 @@ if __name__ == "__main__":
     
     # build profiles from the netflow data 
     profile_build(NF_input)
+
+    # print(profile_dict)
+    # TODO 
+
+def process_multiple_commands():
+    # which date the profile is
+    global profile_date
+    global profile_date_down_ts
+    global profile_date_up_ts  
+    profile_date = "20200817-0600"
+    profile_date_down_ts, profile_date_up_ts = ut.time_round_day_datetime(profile_date)
+
+    # initialize the profile dictionary
+    global profile_dict
+    profile_dict = dict()
+    # initialize and read the prefix
+    global nw_tree
+    nw_tree = rn.read_build_tree()
+    print("Successfully read the prefixes!")
+
+    files = ut.get_files('/Volumes/Laiky/FRGP_Netflow_ISI/validate/17')
+
+    # read command 
+    try:
+        # command = ut.read_command("/Users/yebof/Documents/host-profiling/Profile_build/NFDUMP_command/read_single_defined.txt")
+        command = ut.read_command("/Users/yebof/Documents/host-profiling/Profile_build/NFDUMP_command/read_single.txt")
+        # command = ' '.join(command)
+        print("Successfully read the command:")
+        print("\t"+' '.join(command))
+    except Exception as e:
+        print("An exception occurred when reading the command!")
+        print(e)
+
+    # run the command and read the Netflow data
+    try:
+        for file in files:
+            runtime_start = time.time()
+            print("Inputting the 5 mins of NetFlow data now...")
+            print(file)
+            command[2] = file
+
+            # run with opt 2 as it is complicated output 
+            NF_input = run_bash(' '.join(command),2)
+            NF_input = NF_input.strip().split("\n")
+            print("NetFlow input successfully!")
+
+            # build profiles from the netflow data 
+            profile_build(NF_input)
+            runtime_end = time.time()
+            runtime = float(runtime_end - runtime_start)
+
+            print("~"*10 + " Profiles built for " + file + " " + "~"*10)
+            print("~"*10 + " Toke " + str(runtime) +"s " + "~"*10)
+    except Exception as e:
+        print("An exception occurred when inputting the NetFlow data!")
+        print(e)
+
+    # print(profile_dict)
+    # TODO 
+
+if __name__ == "__main__":
+    # process_single_command()
+    process_multiple_commands()
