@@ -3,6 +3,7 @@ from datetime import datetime
 from datetime import timezone
 from datetime import timedelta
 import os
+import json
 
 def get_files(path):
     # path = '/data/2019'
