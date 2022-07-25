@@ -1,6 +1,7 @@
 import profile_build as pb
 import utilities as ut
 from datetime import datetime
+import json
 
 def test_port_mapping():
     print(pb.port_mapping("0") + " should be 0-10")
@@ -24,6 +25,12 @@ def test_time_mapping():
     print("="*20)
     print(ut.time_round_day_datetime("20200818-0600"))
 
+def test_dict_write():
+    details = {'Name': "Bob", 'Age' :28, 'name2':{'a':1,'b':2}}
+    with open('dict.txt', 'w') as convert_file:
+        convert_file.write(json.dumps(details))
+
 if __name__ == "__main__":
     print("Testing ...")
     # test_time_mapping()
+    test_dict_write()
