@@ -84,6 +84,13 @@ def update_record(direction_flag, start_time, end_time, duration, ip1, ip1_port,
         if profile_date_down_ts <= start_timestamp < profile_date_up_ts:
             add_record_to_profile(direction_flag, start_timestamp, profile_ip, profile_port, pkts, bytes)
     
+    
+    #         start_timestamp                                                    end_timestamp
+    #              <------------------------------------------------------------------> (flow)
+    #              |-duration1|                                         |--duration2--|
+    #    |--------------------|--------------------|--------------------|--------------------|
+    # start_s              end_s                                     start_e               end_e
+    
     # the duration of flow is between 0 to 300
     # may cross two units 
     elif duration <= 300:
