@@ -26,6 +26,15 @@ def read_command(filename):
         command = text.split("\n")
     return command
 
+def dict_write_to_file(dict,filename):
+    # write the dictionary to a txt file
+    # input the dictionary first, then the filename
+    
+    print("Saving results to " + filename + " ......")
+    with open(filename, 'w') as convert_file:
+        convert_file.write(json.dumps(dict))
+    print("Results saved!")
+
 def datetime_to_timestamp(time_str):
     # convert a datetime string to timestamp
     # example: "2020-08-16 23:04:29.056" => 1597644269.056

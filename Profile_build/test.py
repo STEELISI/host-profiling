@@ -25,12 +25,8 @@ def test_time_mapping():
     print("="*20)
     print(ut.time_round_day_datetime("20200818-0600"))
 
-def test_dict_write():
-    details = {'Name': "Bob", 'Age' :28, 'name2':{'a':1,'b':2}}
-    with open('dict.txt', 'w') as convert_file:
-        convert_file.write(json.dumps(details))
-
 if __name__ == "__main__":
     print("Testing ...")
     # test_time_mapping()
-    test_dict_write()
+    details = {'Name': "Bob", 'Age' :28, 'name2':{'a':[{"a1":3},{"a2":3},{}],'b':2}}
+    ut.dict_write_to_file(details, "pf.txt")
