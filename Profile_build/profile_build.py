@@ -275,7 +275,11 @@ def process_multiple_commands():
     # which date the profile is
     global profile_date
     global profile_date_down_ts
-    global profile_date_up_ts  
+    global profile_date_up_ts
+      
+    ####################
+    # UPDATE THIS!!!
+    ####################
     profile_date = "20200817-0600"
     profile_date_down_ts, profile_date_up_ts = ut.time_round_day_datetime(profile_date)
 
