@@ -324,6 +324,9 @@ def process_multiple_commands():
         print("An exception occurred when building profiles from the NetFlow data!")
         print(e)
 
+    print("Everything completed!")
+    ut.dict_write_to_file(profile_dict,"results.txt")
+
     # print(profile_dict)
     # TODO 
 
