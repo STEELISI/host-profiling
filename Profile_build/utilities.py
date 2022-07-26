@@ -29,11 +29,20 @@ def read_command(filename):
 def dict_write_to_file(dict,filename):
     # write the dictionary to a txt file
     # input the dictionary first, then the filename
-    
+
     print("Saving results to " + filename + " ......")
     with open(filename, 'w') as convert_file:
         convert_file.write(json.dumps(dict))
     print("Results saved!")
+
+def dict_read_from_file(filename):
+    # Read data from a file and convert it to a dictionary
+
+    print("Reading data from " + filename + " ......")
+    with open(filename) as json_file:
+        data_dict = json.load(json_file)
+    print("Data read successfully!")
+    return data_dict
 
 def datetime_to_timestamp(time_str):
     # convert a datetime string to timestamp
