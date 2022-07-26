@@ -1,5 +1,6 @@
 # Yebo Feng
 
+import profile
 import subprocess
 import read_network as rn
 import SubnetTree
@@ -276,7 +277,7 @@ def process_multiple_commands():
     global profile_date
     global profile_date_down_ts
     global profile_date_up_ts
-      
+
     ####################
     # UPDATE THIS!!!
     ####################
@@ -305,6 +306,8 @@ def process_multiple_commands():
         print(e)
 
     # run the command and read the Netflow data
+    profile_build_start_time = time.time()
+
     try:
         for file in files:
             runtime_start = time.time()
@@ -327,8 +330,12 @@ def process_multiple_commands():
     except Exception as e:
         print("An exception occurred when building profiles from the NetFlow data!")
         print(e)
+    
+    profile_build_end_time = time.time()
+    profile_build_time_taken = profile_build_end_time - profile_build_start_time
 
     print("Everything completed!")
+    print("Toke " + str(profile_build_time_taken) + " s.")
     ut.dict_write_to_file(profile_dict,"results.txt")
 
     # print(profile_dict)

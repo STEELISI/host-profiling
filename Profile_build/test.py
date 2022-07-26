@@ -2,6 +2,7 @@ import profile_build as pb
 import utilities as ut
 from datetime import datetime
 import json
+import time
 
 def test_port_mapping():
     print(pb.port_mapping("0") + " should be 0-10")
@@ -38,8 +39,18 @@ def test_dict_read():
     print(dict["name2"])
     print(dict["name2"]["a"])
 
+def test_dict_read(f):
+    dict_read_start_time = time.time()
+    dict = ut.dict_read_from_file(f)
+    dict_read_end_time = time.time()
+    dict_read_time_taken = dict_read_end_time - dict_read_start_time
+    print("Toke " + str(dict_read_time_taken) + " s.")
+
+    print(len(dict))
+
 if __name__ == "__main__":
     print("Testing ...")
     # test_time_mapping()
     # test_dict_write()
-    test_dict_read()
+    # test_dict_read()
+    test_dict_read("results.txt")
