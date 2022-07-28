@@ -146,7 +146,7 @@ def add_record_to_profile(direction_flag, timestamp, ip, ip_port, pkts, bytes):
     # add the given information to the profile 
     global profile_dict
     start, end = time_mapping(timestamp)
-    record_key = ut.timestamp_to_datetime(start) + "-" + ut.timestamp_to_datetime(end) + "|" + port_mapping(ip_port)
+    record_key = ut.timestamp_to_datetime(start) + "-" + ut.timestamp_to_datetime(end) + "|" + port_mapping_v1(ip_port)
 
     # outbound traffic 
     if direction_flag == 1:
@@ -165,7 +165,7 @@ def add_record_to_profile(direction_flag, timestamp, ip, ip_port, pkts, bytes):
             profile_dict[ip][1][record_key] = [pkts, bytes]
 
 
-def port_mapping(port):
+def port_mapping_v1(port):
     # map the port number to a port range (string)
 
     # 0 <= p < 200 : every 10;
