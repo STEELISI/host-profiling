@@ -7,6 +7,11 @@ import SubnetTree
 import utilities as ut
 import time
 
+# each profile is a dictionary
+# {IP:[dict(), dict()]}
+# The first sub_dict is for outbound traffic
+# The second sub_dict is for inbound traffic 
+
 def if_monitor(ip1,ip2):
     # check whether one of the two IP addresses are within the defined prefixes 
     # return 1 if the first ip is in the prefixes but the second is not

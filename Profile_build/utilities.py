@@ -4,6 +4,7 @@ from datetime import timezone
 from datetime import timedelta
 import os
 import json
+import time
 
 def get_files(path):
     # path = '/data/2019'
@@ -29,19 +30,30 @@ def read_command(filename):
 def dict_write_to_file(dict,filename):
     # write the dictionary to a txt file
     # input the dictionary first, then the filename
-
+    
     print("Saving results to " + filename + " ......")
+    start_time = time.time()
+
     with open(filename, 'w') as convert_file:
         convert_file.write(json.dumps(dict))
+
+    end_time = time.time()
     print("Results saved!")
+    print("Toke " + str(end_time-start_time) + " s.")
 
 def dict_read_from_file(filename):
     # Read data from a file and convert it to a dictionary
 
     print("Reading data from " + filename + " ......")
+    start_time = time.time()
+
     with open(filename) as json_file:
         data_dict = json.load(json_file)
+    
+    end_time = time.time()
     print("Data read successfully!")
+    print("Toke " + str(end_time-start_time) + " s.")
+
     return data_dict
 
 def datetime_to_timestamp(time_str):

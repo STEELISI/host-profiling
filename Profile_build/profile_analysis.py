@@ -1,6 +1,7 @@
 # Yebo Feng 
 import profile_build as pb
 import utilities as ut
+from itertools import islice
 
 def profile_dict_to_list_v1(profile_dict):
     #########################################
@@ -34,8 +35,26 @@ def profile_dict_to_list_v1(profile_dict):
     inbound = [[[0,0]] * 46] * 288
     outbound = [[[0,0]] * 46] * 288
 
+    # TODO 
     return inbound, outbound
 
+def print_profile(file,num):
+    # print the nth element in the profile dictionary
+    
+    pf_dict = ut.dict_read_from_file(file)
+
+    it = iter(pf_dict)
+    # Consume n elements.
+    next(islice(it, num, num), None) 
+    # Return the value at the current position.
+    # This raises StopIteration if n is beyond the limits.
+    # Use next(it, None) to suppress that exception.
+    item = next(it)
+
+    print(item)
+    print(pf_dict[item])
 
 if __name__ == "__main__":
     print("running")
+
+    print_profile("results.txt",12)
