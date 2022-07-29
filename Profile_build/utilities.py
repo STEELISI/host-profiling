@@ -76,7 +76,7 @@ def datetime_to_timestamp(time_str):
 def timestamp_to_datetime(ts):
     # convert a timestamp to datetime string and further convert it to the time format we need
     # example: 1597644269.056 => "2020-08-16 23:04:29.056"
-    # 00:04
+    # => 00:04
 
     # the Netflow is from FRGP, whose timezone is -6 
     # please change this accordingly, otherwise the program cannot be correct
