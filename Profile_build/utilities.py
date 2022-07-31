@@ -27,6 +27,34 @@ def read_command(filename):
         command = text.split("\n")
     return command
 
+def service_port_to_dict(filename):
+    # read the port information and return a dictionary
+
+    print("Reading service ports ...")
+    ports_dict = dict()
+    ports_info = list()
+    with open(filename, 'r') as file:
+        text = file.read().strip()
+        ports_info = text.split("\n")
+
+    count = 0
+    for line in ports_info:
+        count += 1
+        if count == 1:
+            continue
+        count += 1
+        items = line.split(",")
+        if len(items) < 10:
+            continue
+        if "Unassigned" in items[3]:
+            continue
+        if "Reserved" in items[3]:
+            continue
+        # print(line)
+        ports_dict[items[1]]=items[0]
+    return ports_dict
+
+
 def dict_write_to_file(dict,filename):
     # write the dictionary to a txt file
     # input the dictionary first, then the filename
@@ -107,7 +135,6 @@ def time_round_day_datetime(date_str):
 
 if __name__ == "__main__":
     print("Testing ...")
-
     # print(read_command("/Users/yebof/Documents/host-profiling/Profile_build/NFDUMP_command/read_single_defined.txt"))
-
-    datetime_to_timestamp("2020-08-16 23:04:29.056")
+    # datetime_to_timestamp("2020-08-16 23:04:29.056")
+    print(service_port_to_dict("service-names-port-numbers.csv"))
