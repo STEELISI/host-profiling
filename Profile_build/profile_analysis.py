@@ -1,4 +1,5 @@
 # Yebo Feng 
+import profile
 import profile_build as pb
 import utilities as ut
 from itertools import islice
@@ -68,6 +69,9 @@ def print_n_profiles(file,num):
 
 def port_based_clustering(file1, file2):
     # read the profile and build a dictionary according to the service ports 
+    #
+    # file1 is the profile
+    # file2 is the file to save the results
 
     service_ports_dict = ut.service_port_to_dict("service-names-port-numbers.csv")
     pf_dict = ut.dict_read_from_file(file1)
@@ -75,12 +79,45 @@ def port_based_clustering(file1, file2):
 
     print("Analyzing the profiles...")
     # enumerate the profile dictionary 
-    for i, k, v in enumerate(pf_dict.items()):
-        print(i)
+    for i, (k, v) in enumerate(pf_dict.items()):
+        temp_res = [dict(),dict()]
+        outbound_dict = v[0]
+        inbound_dict = v[1]
+
+        # process the outbound ports
+        for j, (k_out, v_out) in enumerate(outbound_dict.items()):
+            index_list = k_out.split("|")
+            port = index_list[1]
+            if "-" in port:
+                continue
+            else:
+                temp_res[0][port] = service_ports_dict[port]
+        
+        # process the inbound ports
+        for j, (k_in, v_in) in enumerate(inbound_dict.items()):
+            index_list = k_in.split("|")
+            port = index_list[1]
+            if "-" in port:
+                continue
+            else:
+                temp_res[1][port] = service_ports_dict[port]
+
+        clustering_dict[k] = temp_res
+    
+    ut.dict_write_to_file(clustering_dict, file2)
 
 
 if __name__ == "__main__":
     print("running")
 
+    # # print the nth profile 
     # print_nth_profile("results_v2.txt",12)
-    print_n_profiles("results_v2.txt",12)
+
+    # # print the first n profiles
+    # print_n_profiles("results_v2.txt",12)
+    
+    # # Clustering
+    # port_based_clustering("results_v2.txt", "clustering_results.txt")
+
+    # print the first n clustering results
+    print_n_profiles("clustering_results.txt",20)

@@ -28,7 +28,9 @@ def test_time_mapping():
 
 def test_dict_write():
     details = {'Name': "Bob", 'Age' :28, 'name2':{'a':[{"a1":3},{"a2":3},{}],'b':2}}
-    ut.dict_write_to_file(details, "pf.txt")
+    # a = set()
+    # a.add("hi")
+    ut.dict_write_to_file(a, "test.txt")
 
 def test_dict_read():
     test_dict_write()
@@ -51,6 +53,6 @@ def test_dict_read(f):
 if __name__ == "__main__":
     print("Testing ...")
     # test_time_mapping()
-    # test_dict_write()
+    test_dict_write()
     # test_dict_read()
-    test_dict_read("results.txt")
+    # test_dict_read("results.txt")
