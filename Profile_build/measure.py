@@ -7,6 +7,8 @@ import time
 
 def measure_traffic_out_service(flow_list):
 
+    global service_ports_dict
+
     global total_flow_number
     global total_packets
     global total_bytes 
@@ -42,7 +44,22 @@ def measure_traffic_out_service(flow_list):
         if prefix_flag == 0:
             continue
         else:
-            # todo 
+            total_flow_number += 1
+            total_packets += pkts
+            total_bytes += bytes
+            if (ip1 in service_ports_dict) or (ip2 in service_ports_dict):
+                continue
+            else:
+                out_flow_number += 1
+                out_packets += pkts
+                out_bytes += bytes
+    
+    print("******************************")
+    print("Proportion of flows out of the service port list: " + str(out_flow_number/total_flow_number))
+    print("Proportion of packets out of the service port list: " + str(out_packets/total_packets))
+    print("Proportion of bytes out of the service port list: " + str(out_bytes/total_bytes))
+    print("******************************")
+
 
 
 def measure_multiple():
