@@ -52,6 +52,7 @@ def service_port_to_dict(filename):
             continue
         # print(line)
         ports_dict[items[1]]=items[0]
+    print("Service ports loaded sucessfully!")
     return ports_dict
 
 

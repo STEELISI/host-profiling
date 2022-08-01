@@ -179,6 +179,10 @@ def port_mapping_v1(port):
     # 16000 <= p < 20000: every 2000;
     # 20000 <= p: all.
 
+    global service_ports_dict
+    if port in service_ports_dict:
+        return port
+    
     port_num = int(float(port))
 
     # 0-1000: 
@@ -282,12 +286,14 @@ def process_multiple_commands():
     global profile_date
     global profile_date_down_ts
     global profile_date_up_ts
+    global service_ports_dict
 
     ####################
     # UPDATE THIS!!!
     ####################
     profile_date = "20200817-0600"
     profile_date_down_ts, profile_date_up_ts = ut.time_round_day_datetime(profile_date)
+    service_ports_dict = ut.service_port_to_dict("service-names-port-numbers.csv")
 
     # initialize the profile dictionary
     global profile_dict
