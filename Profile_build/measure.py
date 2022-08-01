@@ -5,7 +5,7 @@ import utilities as ut
 import profile_build as pb
 import time
 
-def measure_traffic_out_service(NF_input):
+def measure_traffic_out_service(flow_list):
 
     global total_flow_number
     global total_packets
@@ -14,6 +14,35 @@ def measure_traffic_out_service(NF_input):
     global out_flow_number
     global out_packets
     global out_bytes 
+
+    for record in flow_list:
+        items = record.split("|")
+
+        # ip1 is the source ip 
+        # ip2 is the destination ip
+        ip1_and_port = items[3].strip().split(":")
+        ip2_and_port = items[4].strip().split(":")
+        ip1 = ip1_and_port[0]
+        ip1_port = ip1_and_port[1]
+        ip2 = ip2_and_port[0]
+        ip2_port = ip2_and_port[1]
+        # print(ip1, ip1_port, ip2, ip2_port)
+        start_time = items[0].strip()
+        end_time = items[1].strip()
+        duration = float(items[2].strip())
+        pkts = int(items[7].strip())
+        bytes = int(items[8].strip())
+        # print(start_time, end_time, duration, pkts, bytes)
+
+        # 1 if the first ip is in the prefixes but the second is not
+        # 2 if the second ip is in the prefixes but the first is not
+        # 0 if all the ips are in the prefixes or none of the ips are in the prefixes
+        # we will skip case 0 
+        prefix_flag = pb.if_monitor(ip1, ip2)
+        if prefix_flag == 0:
+            continue
+        else:
+            # todo 
 
 
 def measure_multiple():
