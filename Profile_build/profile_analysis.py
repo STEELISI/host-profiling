@@ -38,7 +38,7 @@ def profile_dict_to_list_v1(profile_dict):
     # TODO 
     return inbound, outbound
 
-def print_profile(file,num):
+def print_nth_profile(file,num):
     # print the nth element in the profile dictionary
     
     pf_dict = ut.dict_read_from_file(file)
@@ -54,7 +54,33 @@ def print_profile(file,num):
     print(item)
     print(pf_dict[item])
 
+def print_n_profiles(file,num):
+    # print the first n elements in the profile dictionary
+    
+    pf_dict = ut.dict_read_from_file(file)
+
+    it = iter(pf_dict)
+
+    for i in range(num):
+        dict_key = next(it)
+        print(str(dict_key) + "; " + str(pf_dict[dict_key]))
+        print("=========================================")
+
+def port_based_clustering(file1, file2):
+    # read the profile and build a dictionary according to the service ports 
+
+    service_ports_dict = ut.service_port_to_dict("service-names-port-numbers.csv")
+    pf_dict = ut.dict_read_from_file(file1)
+    clustering_dict = {}
+
+    print("Analyzing the profiles...")
+    # enumerate the profile dictionary 
+    for i, k, v in enumerate(pf_dict.items()):
+        print(i)
+
+
 if __name__ == "__main__":
     print("running")
 
-    print_profile("results.txt",12)
+    # print_nth_profile("results_v2.txt",12)
+    print_n_profiles("results_v2.txt",12)
