@@ -67,13 +67,13 @@ def measure_traffic_out_service(flow_list):
                 out_flow_number += 1
                 out_packets += pkts
                 out_bytes += bytes
+                print(record)
     
     print("******************************")
     print("Proportion of flows out of the service port list: " + str(out_flow_number/total_flow_number))
     print("Proportion of packets out of the service port list: " + str(out_packets/total_packets))
     print("Proportion of bytes out of the service port list: " + str(out_bytes/total_bytes))
     print("******************************")
-
 
 
 def measure_multiple():

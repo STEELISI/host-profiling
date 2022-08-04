@@ -67,7 +67,7 @@ def print_n_profiles(file,num):
         print(str(dict_key) + "; " + str(pf_dict[dict_key]))
         print("=========================================")
 
-def port_based_clustering(file1, file2):
+def extract_service_ports(file1, file2):
     # read the profile and build a dictionary according to the service ports 
     #
     # file1 is the profile
@@ -117,7 +117,7 @@ if __name__ == "__main__":
     # print_n_profiles("results_v2.txt",12)
     
     # # Clustering
-    # port_based_clustering("results_v2.txt", "clustering_results.txt")
+    # extract_service_ports("results_v2.txt", "clustering_results.txt")
 
     # print the first n clustering results
     print_n_profiles("clustering_results.txt",20)
