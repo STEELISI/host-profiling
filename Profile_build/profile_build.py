@@ -174,6 +174,31 @@ def add_record_to_profile(direction_flag, timestamp, ip, ip_port, another_port, 
         else:
             profile_dict[ip][1][record_key] = [pkts, bytes]
 
+def check_port(port1, port2):
+    # check which port is the service port 
+    # 
+    # if the first port is the service port, then return 1
+    # if the second port is the service port, then return 2
+    # if both ports are service ports, then treat the smaller port as the service port
+    # if none of the ports are service ports, then return 0
+
+
+    global service_ports_dict
+    if port1 in service_ports_dict:
+        if port2 in service_ports_dict:
+            # two ports all in service port dict 
+            if float(port1) <= float(port2):
+                return 1
+            else:
+                return 2
+        else:
+            return 1
+    else:
+        if port2 in service_ports_dict:
+            return 2
+        else:
+            # none of the ports are in service port dict 
+            return 0
 
 def port_mapping_v1(port):
     # map the port number to a port range (string)
@@ -187,10 +212,6 @@ def port_mapping_v1(port):
     # 1000 <= p < 16000: every 1000;
     # 16000 <= p < 20000: every 2000;
     # 20000 <= p: all.
-
-    global service_ports_dict
-    if port in service_ports_dict:
-        return port
     
     port_num = int(float(port))
 
@@ -216,9 +237,9 @@ def port_mapping_v1(port):
             up_num = int(port_num/2000) * 2000 + 2000
         # 20000-:
         else:
-            return "20000-"
+            return "20000---"
 
-    return str(down_num)+'-'+str(up_num)
+    return str(down_num)+'---'+str(up_num)
 
 def time_mapping(time_input):
     # map the timestamp to 5 minutes (300s) round 
