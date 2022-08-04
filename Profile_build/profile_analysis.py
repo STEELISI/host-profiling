@@ -106,6 +106,17 @@ def extract_service_ports(file1, file2):
     
     ut.dict_write_to_file(clustering_dict, file2)
 
+def extract_most_used_service_ports(num , file1, file2):
+    # read the profile and build a dictionary according to the most used service ports 
+    #
+    # num indicates the top num service ports
+    # file1 is the profile
+    # file2 is the file to save the results
+
+    service_ports_dict = ut.service_port_to_dict("service-names-port-numbers.csv")
+    pf_dict = ut.dict_read_from_file(file1)
+    clustering_dict = {}
+
 
 if __name__ == "__main__":
     print("running")
