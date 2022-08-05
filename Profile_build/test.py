@@ -3,6 +3,7 @@ import utilities as ut
 from datetime import datetime
 import json
 import time
+import os
 
 def test_port_mapping():
     print(pb.port_mapping("0") + " should be 0-10")
@@ -16,6 +17,19 @@ def test_port_mapping():
     print(pb.port_mapping("28080") + " should be 20000-")
     print(pb.port_mapping("19080") + " should be 18000-20000")
     print(pb.port_mapping("3306") + " should be 3000-4000")
+
+def test_port_mapping_v1():
+    print(pb.port_mapping_v1("0",2) + " should be 0-10")
+    print(pb.port_mapping_v1("3",2) + " should be 0-10")
+    print(pb.port_mapping_v1("5",2) + " should be 0-10")
+    print(pb.port_mapping_v1("8",2) + " should be 0-10")
+    print(pb.port_mapping_v1("23",2) + " should be 20-30")
+    print(pb.port_mapping_v1("123",2) + " should be 120-130")
+    print(pb.port_mapping_v1("80",2) + " should be 80-90")
+    print(pb.port_mapping_v1("8080",2) + " should be 8000-9000")
+    print(pb.port_mapping_v1("28080",2) + " should be 20000-")
+    print(pb.port_mapping_v1("19080",2) + " should be 18000-20000")
+    print(pb.port_mapping_v1("3306",2) + " should be 3000-4000")
 
 def test_time_mapping():
     print(pb.time_mapping(ut.datetime_to_timestamp("2020-08-16 23:04:29.056")))
@@ -50,9 +64,16 @@ def test_dict_read(f):
 
     print(len(dict))
 
+def test_relative_path():
+    dirname = os.path.dirname(__file__)
+    filename = os.path.join(dirname, 'results/')
+    print(filename)
+
 if __name__ == "__main__":
     print("Testing ...")
     # test_time_mapping()
-    test_dict_write()
+    # test_dict_write()
     # test_dict_read()
     # test_dict_read("results.txt")
+    # test_port_mapping_v1()
+    # test_relative_path()

@@ -7,6 +7,8 @@ import read_network as rn
 import SubnetTree
 import utilities as ut
 import time
+import os
+import argparse
 
 # each profile is a dictionary
 # {IP:[dict(), dict()]}
@@ -158,7 +160,7 @@ def add_record_to_profile(direction_flag, timestamp, ip, ip_port, another_port, 
 
     # outbound traffic 
     if direction_flag == 1:
-        record_key = ut.timestamp_to_datetime(start) + "-" + ut.timestamp_to_datetime(end) + "|" + port_mapping_v1(another_port)
+        record_key = ut.timestamp_to_datetime(start) + "-" + ut.timestamp_to_datetime(end) + "|" + port_mapping_v1(another_port, check_service_port(another_port, ip_port))
         if record_key in profile_dict[ip][0]:
             temp = profile_dict[ip][0][record_key]
             profile_dict[ip][0][record_key] = [temp[0] + pkts, temp[1] + bytes]
@@ -167,14 +169,14 @@ def add_record_to_profile(direction_flag, timestamp, ip, ip_port, another_port, 
 
     # inbound traffic
     else:
-        record_key = ut.timestamp_to_datetime(start) + "-" + ut.timestamp_to_datetime(end) + "|" + port_mapping_v1(ip_port)
+        record_key = ut.timestamp_to_datetime(start) + "-" + ut.timestamp_to_datetime(end) + "|" + port_mapping_v1(ip_port, check_service_port(ip_port, another_port))
         if record_key in profile_dict[ip][1]:
             temp = profile_dict[ip][1][record_key]
             profile_dict[ip][1][record_key] = [temp[0] + pkts, temp[1] + bytes]
         else:
             profile_dict[ip][1][record_key] = [pkts, bytes]
 
-def check_port(port1, port2):
+def check_service_port(port1, port2):
     # check which port is the service port 
     # 
     # if the first port is the service port, then return 1
@@ -200,44 +202,40 @@ def check_port(port1, port2):
             return 0
 
 
-def port_mapping_v1(port):
+def port_mapping_v1(port,p_flag):
     # map the port number to a port range (string)
+    # p_flag indicated whether the port is a service port 
 
-    # first check whether in the service port dictionary
-
-    # THEN:
-
-    # 0 <= p < 200 : every 10;
-    # 200 <= p < 1000: every 100;
-    # 1000 <= p < 16000: every 1000;
-    # 16000 <= p < 20000: every 2000;
-    # 20000 <= p: all.
+    # 0 <= p < 1000 : every 100;
+    # 1000 <= p < 10000: every 1000;
+    # 10000 <= p < 50000: every 5000;
+    # 50000 <= p: all.
     
     port_num = int(float(port))
 
-    # 0-1000: 
-    if port_num < 1000:
-        # 0-200: 
-        if port_num < 200:
-            down_num = int(port_num/10) * 10
-            up_num = int(port_num/10) * 10 + 10
-        # 200-1000: 
-        else:
+    if p_flag == 1:
+        # it is a service port 
+        return port
+
+    # 0-10000: 
+    if port_num < 10000:
+        # 0-1000: every 100 
+        if port_num < 1000:
             down_num = int(port_num/100) * 100
             up_num = int(port_num/100) * 100 + 100
-    # 1000-:
-    else:
-        # 1000-16000:
-        if port_num < 16000:
+        # 1000-10000: every 1000
+        else:
             down_num = int(port_num/1000) * 1000
             up_num = int(port_num/1000) * 1000 + 1000
-        # 16000-20000:
-        elif port_num < 20000:
-            down_num = int(port_num/2000) * 2000
-            up_num = int(port_num/2000) * 2000 + 2000
+    # 10000-:
+    else:
+        # 10000-50000: every 5000
+        if port_num < 50000:
+            down_num = int(port_num/5000) * 5000
+            up_num = int(port_num/5000) * 5000 + 5000
         # 20000-:
         else:
-            return "20000---"
+            return "50000---"
 
     return str(down_num)+'---'+str(up_num)
 
@@ -311,7 +309,7 @@ def process_single_command():
     # print(profile_dict)
     # TODO 
 
-def process_multiple_commands():
+def process_multiple_commands(netflow_path, profile_date_input):
     # which date the profile is
     global profile_date
     global profile_date_down_ts
@@ -321,7 +319,8 @@ def process_multiple_commands():
     ####################
     # UPDATE THIS!!!
     ####################
-    profile_date = "20200817-0600"
+    # profile_date = "20200817-0600"
+    profile_date = profile_date_input
     profile_date_down_ts, profile_date_up_ts = ut.time_round_day_datetime(profile_date)
     service_ports_dict = ut.service_port_to_dict("service-names-port-numbers.csv")
 
@@ -333,12 +332,18 @@ def process_multiple_commands():
     nw_tree = rn.read_build_tree()
     print("Successfully read the prefixes!")
 
-    files = ut.get_files('/Volumes/Laiky/FRGP_Netflow_ISI/validate/17')
+    # files = ut.get_files('/Volumes/Laiky/FRGP_Netflow_ISI/validate/17')
+    files = ut.get_files(netflow_path)
 
     # read command 
     try:
         # command = ut.read_command("/Users/yebof/Documents/host-profiling/Profile_build/NFDUMP_command/read_single_defined.txt")
-        command = ut.read_command("/Users/yebof/Documents/host-profiling/Profile_build/NFDUMP_command/read_single.txt")
+        # command = ut.read_command("/Users/yebof/Documents/host-profiling/Profile_build/NFDUMP_command/read_single.txt")
+        
+        dirname = os.path.dirname(__file__)
+        command_filename = os.path.join(dirname, 'NFDUMP_command/read_single.txt')
+
+        command = ut.read_command(command_filename)
         # command = ' '.join(command)
         print("Successfully read the command:")
         print("\t"+' '.join(command))
@@ -377,11 +382,20 @@ def process_multiple_commands():
 
     print("Everything completed!")
     print("Toke " + str(profile_build_time_taken) + " s.")
-    ut.dict_write_to_file(profile_dict,"results.txt")
+    ut.dict_write_to_file(profile_dict, "profile_results.txt")
 
     # print(profile_dict)
     # TODO 
 
 if __name__ == "__main__":
+    # python3 profile_build.py -p "/Volumes/Laiky/FRGP_Netflow_ISI/validate/17" -t "20200817-0600"
+
     # process_single_command()
-    process_multiple_commands()
+    # process_multiple_commands()
+
+    parser = argparse.ArgumentParser()
+    parser.add_argument('-p', type=str, required=True, help='The path of Netflow files.')
+    parser.add_argument('-t', type=str, required=True, help='The time and timezone difference. For example: \"20200817-0600\".')
+    args = parser.parse_args()
+    
+    process_multiple_commands(args.p, args.t)
