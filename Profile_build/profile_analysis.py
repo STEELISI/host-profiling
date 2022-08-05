@@ -135,8 +135,8 @@ def extract_most_used_service_ports(num , file1, file2):
             index_list = k_out.split("|")
             port = index_list[1]
 
-            if "-" in port:
-                port_key = port
+            if "---" in port:
+                port_key = "NON_SERVICE_PORT"
             else:
                 port_key = service_ports_dict[port]
 
@@ -146,7 +146,7 @@ def extract_most_used_service_ports(num , file1, file2):
             else:
                 outbound_usage[port_key] = v_out
 
-            if "-" in port:
+            if "---" in port:
                 continue
             else:
                 temp_res[2][port] = service_ports_dict[port]
@@ -197,4 +197,4 @@ if __name__ == "__main__":
     print_n_profiles("clustering_results.txt",20)
 
     # # # Clustering with most used service ports
-    # extract_most_used_service_ports(5 , "results_v2.txt", "clustering_results.txt")
+    # extract_most_used_service_ports(5 , "profile_results.txt", "clustering_results.txt")
