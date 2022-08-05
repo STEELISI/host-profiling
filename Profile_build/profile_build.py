@@ -182,7 +182,6 @@ def check_port(port1, port2):
     # if both ports are service ports, then treat the smaller port as the service port
     # if none of the ports are service ports, then return 0
 
-
     global service_ports_dict
     if port1 in service_ports_dict:
         if port2 in service_ports_dict:
@@ -199,6 +198,7 @@ def check_port(port1, port2):
         else:
             # none of the ports are in service port dict 
             return 0
+
 
 def port_mapping_v1(port):
     # map the port number to a port range (string)
