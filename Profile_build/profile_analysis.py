@@ -55,7 +55,7 @@ def print_nth_profile(file,num):
     print(item)
     print(pf_dict[item])
 
-def print_n_profiles(file,num):
+def print_n_simplified_profiles(file,num):
     # print the first n elements in the profile dictionary
     
     pf_dict = ut.dict_read_from_file(file)
@@ -64,7 +64,7 @@ def print_n_profiles(file,num):
 
     for i in range(num):
         dict_key = next(it)
-        print(">>>>>>>>>> " + str(dict_key) + " <<<<<<<<<<")
+        print(">>>>>>>>>>>>>>>>>>>> " + str(dict_key) + " <<<<<<<<<<<<<<<<<<<<")
         for i in pf_dict[dict_key]:
             print("=========================================")
             print(str(i))
@@ -109,7 +109,7 @@ def extract_service_ports(file1, file2):
     
     ut.dict_write_to_file(clustering_dict, file2)
 
-def simplified_profile_generation(num , file1, file2):
+def simplified_profile_generation(number_of_items_in_topic , file1, file2):
     # read the profile and build a dictionary according to the most used service ports 
     #
     # num indicates the top num service ports
@@ -224,8 +224,8 @@ def simplified_profile_generation(num , file1, file2):
             inbound_usage[p_key][1] =  inbound_usage[p_key][1]/total_bytes
 
         # generate item 1, the topic of this IP address
-        outbound_topic = sorted(outbound_usage.items(), key=lambda item: item[1][1], reverse=True)[:num]
-        inbound_topic = sorted(inbound_usage.items(), key=lambda item: item[1][1], reverse=True)[:num]
+        outbound_topic = sorted(outbound_usage.items(), key=lambda item: item[1][1], reverse=True)[:number_of_items_in_topic]
+        inbound_topic = sorted(inbound_usage.items(), key=lambda item: item[1][1], reverse=True)[:number_of_items_in_topic]
         topic = outbound_topic + inbound_topic
         # sort the topic 
         def sort_key(e):
@@ -253,8 +253,8 @@ if __name__ == "__main__":
     # # Clustering
     # extract_service_ports("results_v2.txt", "clustering_results.txt")
 
-    # print the first n clustering results
-    print_n_profiles("clustering_results.txt",20)
+    # print the first n simplified profiles
+    print_n_simplified_profiles("simplified_profile_results.txt",20)
 
-    # # # Clustering with most used service ports
-    # simplified_profile_generation(5 , "profile_results.txt", "clustering_results.txt")
+    # # Clustering with most used service ports
+    # simplified_profile_generation(5 , "profile_results.txt", "simplified_profile_results.txt")
