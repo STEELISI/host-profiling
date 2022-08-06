@@ -116,22 +116,35 @@ def simplified_profile_generation(num , file1, file2):
     # file1 is the profile
     # file2 is the file to save the results
     #
-    # {"IP 1": [item1, item2, item3]}
-    #           item1: the topic of this IP address
-    #           item2: the traffic throughput of this IP address
-    #           item3: the detailed port information
+    # Layout of the simplified profile:
+    # {"IP 1": [item1, item2, item3], "IP 2": [item1, item2, item3], ......}
+    #           item1: the topic of this IP address,
+    #                  a sorted list with up to 10 items [["Inbound|80|http", 0.5, 0.5], ["Inbound|---|NON_SERVICE_PORT", 0.3, 0.25], ......]
+    #                                                                          ^    ^
+    #                                                                          |    |
+    #                                                          proportion of pkts   proportion of bytes
+    #           item2: the traffic throughput of this IP address, a list
+    #                   [item1, item2, item3, item4]
+    #                   item1: outbound pkts total, item2: outbound bytes total
+    #                   item3: outbound pkts total, item4: outbound bytes total
+    #           item3: the detailed port information, a dictionary
+    #                   {"Inbound|PORT_NUM|explaination_of_the_port":[item1, item2], "Outbound|---|NON_SERVICE_PORT":[item1, item2], ......}
+    #                                                                   ^      ^
+    #                                                                   |      |
+    #                                                   proportion of pkts    proportion of bytes
 
     service_ports_dict = ut.service_port_to_dict("service-names-port-numbers.csv")
     pf_dict = ut.dict_read_from_file(file1)
-    clustering_dict = {}
+    simplified_PF_dict = {}
 
-    print("Analyzing the profiles...")
+    print("Generating simplified profiles ...")
     # enumerate the profile dictionary 
     for i, (k, v) in enumerate(pf_dict.items()):
         temp_res = [[],[],dict(),dict()]
         outbound_dict = v[0]
         inbound_dict = v[1]
 
+        # the item3 of the simplified profile
         outbound_usage = {}
         inbound_usage = {}
 
@@ -140,10 +153,12 @@ def simplified_profile_generation(num , file1, file2):
             index_list = k_out.split("|")
             port = index_list[1]
 
+            # generate the key value for port information
             if "---" in port:
-                port_key = "NON_SERVICE_PORT"
+                # it is a non-service port 
+                port_key = "Outbound|---|NON_SERVICE_PORT"
             else:
-                port_key = service_ports_dict[port]
+                port_key = "Outbound|" + port + "|" + service_ports_dict[port]
 
             if port_key in outbound_usage:
                 value_to_be_updated = [v_out[0]+outbound_dict[k_out][0], v_out[1]+outbound_dict[k_out][1]]
@@ -181,9 +196,9 @@ def simplified_profile_generation(num , file1, file2):
         
         temp_res[1] = sorted(inbound_usage.items(), key=lambda item: item[1][1], reverse=True)[:num]
 
-        clustering_dict[k] = temp_res
+        simplified_PF_dict[k] = temp_res
     
-    ut.dict_write_to_file(clustering_dict, file2)
+    ut.dict_write_to_file(simplified_PF_dict, file2)
 
 
 if __name__ == "__main__":
