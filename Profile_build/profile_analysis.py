@@ -56,7 +56,7 @@ def print_nth_profile(file,num):
     print(pf_dict[item])
 
 def print_n_simplified_profiles(file,num):
-    # print the first n elements in the profile dictionary
+    # print the first n elements in the simplified profile dictionary
     
     pf_dict = ut.dict_read_from_file(file)
 
@@ -65,10 +65,18 @@ def print_n_simplified_profiles(file,num):
     for i in range(num):
         dict_key = next(it)
         print(">>>>>>>>>>>>>>>>>>>> " + str(dict_key) + " <<<<<<<<<<<<<<<<<<<<")
-        for i in pf_dict[dict_key]:
-            print("=========================================")
-            print(str(i))
-            print("=========================================")
+        print("Topic of this IP: ")
+        print(pf_dict[dict_key][0])
+        print("Outbound total pkts: " + str(pf_dict[dict_key][1][0]))
+        print("Outbound total bytes: " + str(pf_dict[dict_key][1][1]))
+        print("Inbound total pkts: " + str(pf_dict[dict_key][1][2]))
+        print("Inbound total bytes: " + str(pf_dict[dict_key][1][3]))
+        print("========== " + "Detailed port information" " ================================================")
+        for i, (k, v) in enumerate(pf_dict[dict_key][2].items()):
+            print(k + ": " + str(v))
+        print("========== " + "End" " ======================================================================")
+        print()
+        print()
 
 def extract_service_ports(file1, file2):
     # read the profile and build a dictionary according to the service ports 
