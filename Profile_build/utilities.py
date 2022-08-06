@@ -85,6 +85,11 @@ def dict_read_from_file(filename):
 
     return data_dict
 
+def merge_dict(dict1, dict2):
+    # merge two dictionaries 
+    result = {**dict1, **dict2}
+    return result
+
 def datetime_to_timestamp(time_str):
     # convert a datetime string to timestamp
     # example: "2020-08-16 23:04:29.056" => 1597644269.056
