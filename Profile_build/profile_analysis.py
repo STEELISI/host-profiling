@@ -109,12 +109,17 @@ def extract_service_ports(file1, file2):
     
     ut.dict_write_to_file(clustering_dict, file2)
 
-def extract_most_used_service_ports(num , file1, file2):
+def simplified_profile_generation(num , file1, file2):
     # read the profile and build a dictionary according to the most used service ports 
     #
     # num indicates the top num service ports
     # file1 is the profile
     # file2 is the file to save the results
+    #
+    # {"IP 1": [item1, item2, item3]}
+    #           item1: the topic of this IP address
+    #           item2: the traffic throughput of this IP address
+    #           item3: the detailed port information
 
     service_ports_dict = ut.service_port_to_dict("service-names-port-numbers.csv")
     pf_dict = ut.dict_read_from_file(file1)
@@ -197,4 +202,4 @@ if __name__ == "__main__":
     print_n_profiles("clustering_results.txt",20)
 
     # # # Clustering with most used service ports
-    # extract_most_used_service_ports(5 , "profile_results.txt", "clustering_results.txt")
+    # simplified_profile_generation(5 , "profile_results.txt", "clustering_results.txt")

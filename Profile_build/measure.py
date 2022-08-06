@@ -1,3 +1,4 @@
+import profile
 import subprocess
 import read_network as rn
 import SubnetTree
@@ -141,6 +142,9 @@ def measure_multiple():
     measure_end_time = time.time()
     measure_time_taken = measure_end_time - measure_start_time
 
+def number_of_items_in_dict(filename):
+    print(len(ut.dict_read_from_file(filename)))
 
 if __name__ == "__main__":
-    measure_multiple()
+    # measure_multiple()
+    number_of_items_in_dict("profile_results.txt")
