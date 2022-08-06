@@ -13,7 +13,20 @@ import argparse
 # each profile is a dictionary
 # {IP:[dict(), dict()]}
 # The first sub_dict is for outbound traffic
-# The second sub_dict is for inbound traffic 
+# The second sub_dict is for inbound traffic
+#
+# each item in the sub_dict looks like:
+#   For service-port-related:
+#   "12:05-12:10|80": [12, 3000]
+#       ^         ^     ^    ^
+#       |         |     |    |
+#      time      port  pkts  bytes
+#
+#   For non-service-port-related:
+#   "12:05-12:10|0-100": [12, 3000]
+#                 ^
+#                 |
+#        use a range to represent
 
 def if_monitor(ip1,ip2):
     # check whether one of the two IP addresses are within the defined prefixes 
@@ -310,7 +323,7 @@ def process_single_command():
     # print(profile_dict)
     # TODO 
 
-def process_multiple_commands(netflow_path, profile_date_input):
+def process_multiple_commands(netflow_path, profile_date_input, save_to_file):
     # which date the profile is
     global profile_date
     global profile_date_down_ts
@@ -383,20 +396,22 @@ def process_multiple_commands(netflow_path, profile_date_input):
 
     print("Everything completed!")
     print("Toke " + str(profile_build_time_taken) + " s.")
-    ut.dict_write_to_file(profile_dict, "profile_results.txt")
+    ut.dict_write_to_file(profile_dict, save_to_file)
 
     # print(profile_dict)
     # TODO 
 
 if __name__ == "__main__":
-    # python3 profile_build.py -p "/Volumes/Laiky/FRGP_Netflow_ISI/validate/17" -t "20200817-0600"
+    # sample command: 
+    # python3 profile_build.py -p "/Volumes/Laiky/FRGP_Netflow_ISI/validate/17" -t "20200817-0600" -r "profile_results.txt"
 
     # process_single_command()
     # process_multiple_commands()
 
     parser = argparse.ArgumentParser()
-    parser.add_argument('-p', type=str, required=True, help='The path of Netflow files.')
+    parser.add_argument('-p', type=str, required=True, help='The path of Netflow files. For example: \"/Volumes/Laiky/FRGP_Netflow_ISI/validate/17\".')
     parser.add_argument('-t', type=str, required=True, help='The time and timezone difference. For example: \"20200817-0600\".')
+    parser.add_argument('-r', type=str, required=True, help='Which file should it save results to. For example: \"profile_results.txt\".')
     args = parser.parse_args()
     
-    process_multiple_commands(args.p, args.t)
+    process_multiple_commands(args.p, args.t, args.r)
