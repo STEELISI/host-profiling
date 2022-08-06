@@ -64,9 +64,10 @@ def print_n_simplified_profiles(file,num):
 
     for i in range(num):
         dict_key = next(it)
-        print(">>>>>>>>>>>>>>>>>>>> " + str(dict_key) + " <<<<<<<<<<<<<<<<<<<<")
+        print(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> " + str(dict_key) + " <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<")
         print("Topic of this IP: ")
         print(pf_dict[dict_key][0])
+        print("========== " + "Traffic volume" " ===========================================================")
         print("Outbound total pkts: " + str(pf_dict[dict_key][1][0]))
         print("Outbound total bytes: " + str(pf_dict[dict_key][1][1]))
         print("Inbound total pkts: " + str(pf_dict[dict_key][1][2]))

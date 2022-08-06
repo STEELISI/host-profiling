@@ -187,8 +187,9 @@ def check_service_port(port1, port2):
     global service_ports_dict
     if port1 in service_ports_dict:
         if port2 in service_ports_dict:
-            # two ports all in service port dict 
+            # two ports all in service port dict
             if float(port1) <= float(port2):
+                # only treats the smaller one as the service port 
                 return 1
             else:
                 return 2
