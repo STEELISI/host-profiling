@@ -413,5 +413,8 @@ if __name__ == "__main__":
     parser.add_argument('-t', type=str, required=True, help='The time and timezone difference. For example: \"20200817-0600\".')
     parser.add_argument('-r', type=str, required=True, help='Which file should it save results to. For example: \"profile_results.txt\".')
     args = parser.parse_args()
+
+    res_dirname = os.path.dirname(__file__)
+    res_filename = os.path.join(res_dirname, args.r)
     
-    process_multiple_commands(args.p, args.t, args.r)
+    process_multiple_commands(args.p, args.t, res_filename)

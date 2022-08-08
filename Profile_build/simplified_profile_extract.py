@@ -1,8 +1,8 @@
 # Yebo Feng 
-import profile
 import profile_build as pb
 import utilities as ut
 from itertools import islice
+import os
 
 def profile_dict_to_list_v1(profile_dict):
     #########################################
@@ -39,51 +39,16 @@ def profile_dict_to_list_v1(profile_dict):
     # TODO 
     return inbound, outbound
 
-def print_nth_profile(file,num):
-    # print the nth element in the profile dictionary
-    
-    pf_dict = ut.dict_read_from_file(file)
-
-    it = iter(pf_dict)
-    # Consume n elements.
-    next(islice(it, num, num), None) 
-    # Return the value at the current position.
-    # This raises StopIteration if n is beyond the limits.
-    # Use next(it, None) to suppress that exception.
-    item = next(it)
-
-    print(item)
-    print(pf_dict[item])
-
-def print_n_simplified_profiles(file,num):
-    # print the first n elements in the simplified profile dictionary
-    
-    pf_dict = ut.dict_read_from_file(file)
-
-    it = iter(pf_dict)
-
-    for i in range(num):
-        dict_key = next(it)
-        print(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> " + str(dict_key) + " <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<")
-        print("Topic of this IP: ")
-        print(pf_dict[dict_key][0])
-        print("========== " + "Traffic volume" " ===========================================================")
-        print("Outbound total pkts: " + str(pf_dict[dict_key][1][0]))
-        print("Outbound total bytes: " + str(pf_dict[dict_key][1][1]))
-        print("Inbound total pkts: " + str(pf_dict[dict_key][1][2]))
-        print("Inbound total bytes: " + str(pf_dict[dict_key][1][3]))
-        print("========== " + "Detailed port information" " ================================================")
-        for i, (k, v) in enumerate(pf_dict[dict_key][2].items()):
-            print(k + ": " + str(v))
-        print("========== " + "End" " ======================================================================")
-        print()
-        print()
 
 def extract_service_ports(file1, file2):
     # read the profile and build a dictionary according to the service ports 
     #
     # file1 is the profile
     # file2 is the file to save the results
+
+    dirname = os.path.dirname(__file__)
+    file1 = os.path.join(dirname, file1)
+    file2 = os.path.join(dirname, file2)
 
     service_ports_dict = ut.service_port_to_dict("service-names-port-numbers.csv")
     pf_dict = ut.dict_read_from_file(file1)
@@ -118,6 +83,7 @@ def extract_service_ports(file1, file2):
     
     ut.dict_write_to_file(clustering_dict, file2)
 
+
 def simplified_profile_generation(number_of_items_in_topic , file1, file2):
     # read the profile and build a dictionary according to the most used service ports 
     #
@@ -141,6 +107,10 @@ def simplified_profile_generation(number_of_items_in_topic , file1, file2):
     #                                                                   ^      ^
     #                                                                   |      |
     #                                                   proportion of pkts    proportion of bytes
+
+    dirname = os.path.dirname(__file__)
+    file1 = os.path.join(dirname, file1)
+    file2 = os.path.join(dirname, file2)
 
     service_ports_dict = ut.service_port_to_dict("service-names-port-numbers.csv")
     pf_dict = ut.dict_read_from_file(file1)
@@ -251,19 +221,4 @@ def simplified_profile_generation(number_of_items_in_topic , file1, file2):
 
 
 if __name__ == "__main__":
-    print("running")
-
-    # # print the nth profile 
-    # print_nth_profile("results_v2.txt",12)
-
-    # # print the first n profiles
-    # print_n_profiles("results_v2.txt",12)
-    
-    # # Clustering
-    # extract_service_ports("results_v2.txt", "clustering_results.txt")
-
-    # print the first n simplified profiles
-    print_n_simplified_profiles("simplified_profile_results.txt",20)
-
-    # # Clustering with most used service ports
-    # simplified_profile_generation(5 , "profile_results.txt", "simplified_profile_results.txt")
+    simplified_profile_generation(5 , "results/8.17_profile_results.txt", "results/test.txt")

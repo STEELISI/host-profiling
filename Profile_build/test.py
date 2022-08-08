@@ -69,6 +69,11 @@ def test_relative_path():
     filename = os.path.join(dirname, 'results/')
     print(filename)
 
+def file_path(f):
+    res_dirname = os.path.dirname(__file__)
+    res_filename = os.path.join(res_dirname, f)
+    print(res_filename)
+
 if __name__ == "__main__":
     print("Testing ...")
     # test_time_mapping()
@@ -77,3 +82,4 @@ if __name__ == "__main__":
     # test_dict_read("results.txt")
     # test_port_mapping_v1()
     # test_relative_path()
+    file_path("../")
