@@ -2,6 +2,7 @@ from itertools import islice
 import utilities as ut
 import os
 import argparse
+import textwrap
 
 def print_nth_profile(file,num):
     # print the nth element in the profile dictionary
@@ -18,8 +19,16 @@ def print_nth_profile(file,num):
     # Use next(it, None) to suppress that exception.
     item = next(it)
 
-    print(item)
-    print(pf_dict[item])
+    print(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> " + str(item) + " <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<")
+    print("========== " + "Outbound Traffic" " =========================================================")
+    for i, (k, v) in enumerate(pf_dict[item][0].items()):
+        print(k + ": " + str(v))
+    print("========== " + "Inbound Traffic" " ================================================")
+    for i, (k, v) in enumerate(pf_dict[item][1].items()):
+        print(k + ": " + str(v))
+    print("========== " + "End" " ======================================================================")
+    print()
+    print()
 
 def print_n_profiles(file,num):
     # print the first n elements in the profile dictionary
@@ -73,15 +82,30 @@ if __name__ == "__main__":
     # Examples:
     #     python3 print_pf.py -spf "results/8.17_simplified_profile_results.txt" -n 20
     #     python3 print_pf.py -pf "results/8.17_profile_results.txt" -n 20
+    #     python3 print_pf.py -nth_pf "results/8.17_profile_results.txt" -nth 20
 
 
-    parser = argparse.ArgumentParser()
+    parser = argparse.ArgumentParser(prog='ProgramName',
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+        epilog=textwrap.dedent('''\
+            EXAMPLES:
+                Print the first 20 simplified profiles from "results/8.17_simplified_profile_results.txt":
+                    python3 print_pf.py -spf "results/8.17_simplified_profile_results.txt" -n 20
+                Print the first 20 profiles from "results/8.17_profile_results.txt":
+                    python3 print_pf.py -pf "results/8.17_profile_results.txt" -n 20
+                Print the 20th profile from "results/8.17_profile_results.txt":
+                    python3 print_pf.py -nth_pf "results/8.17_profile_results.txt" -nth 20
+        '''))
     parser.add_argument('-spf', type=str, help='The path of the simplified profile you want to print. For example: \"results/8.17_simplified_profile_results.txt\".')
     parser.add_argument('-pf', type=str, help='The path of the profile you want to print. For example: \"results/8.17_profile_results.txt\".')
+    parser.add_argument('-nth_pf', type=str, help='The path of the profile you want to print (the nth item). For example: \"results/8.17_profile_results.txt\".')
     parser.add_argument('-n', type=int, help='The number of items you want to print. For example: 20.')
+    parser.add_argument('-nth', type=int, help='The nth item you want to print. For example: 20.')
     args = parser.parse_args()
 
     if args.pf:
         print_n_profiles(args.pf, args.n)
     elif args.spf:
         print_n_simplified_profiles(args.spf, args.n)
+    elif args.nth_pf:
+        print_nth_profile(args.nth_pf, args.nth)
