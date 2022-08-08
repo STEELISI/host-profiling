@@ -85,7 +85,7 @@ if __name__ == "__main__":
     #     python3 print_pf.py -nth_pf "results/8.17_profile_results.txt" -nth 20
 
 
-    parser = argparse.ArgumentParser(prog='ProgramName',
+    parser = argparse.ArgumentParser(
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog=textwrap.dedent('''\
             EXAMPLES:
