@@ -4,6 +4,24 @@ import os
 import argparse
 import textwrap
 
+def print_ip_profile(file,ip):
+    # print the profile of IP from dictionary
+    
+    dirname = os.path.dirname(__file__)
+    filename = os.path.join(dirname, file)
+    pf_dict = ut.dict_read_from_file(filename)
+
+    print(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> " + ip + " <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<")
+    print("========== " + "Outbound Traffic" " =========================================================")
+    for i, (k, v) in enumerate(pf_dict[ip][0].items()):
+        print(k + ": " + str(v))
+    print("========== " + "Inbound Traffic" " ================================================")
+    for i, (k, v) in enumerate(pf_dict[ip][1].items()):
+        print(k + ": " + str(v))
+    print("========== " + "End" " ======================================================================")
+    print()
+    print()
+
 def print_nth_profile(file,num):
     # print the nth element in the profile dictionary
     
@@ -29,6 +47,29 @@ def print_nth_profile(file,num):
     print("========== " + "End" " ======================================================================")
     print()
     print()
+
+def print_ip_simplified_profile(file,ip):
+    # print the IP in the simplified profile dictionary
+    
+    dirname = os.path.dirname(__file__)
+    filename = os.path.join(dirname, file)
+    pf_dict = ut.dict_read_from_file(filename)
+
+    print(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> " + ip + " <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<")
+    print("Topic of this IP: ")
+    print(pf_dict[ip][0])
+    print("========== " + "Traffic volume" " ===========================================================")
+    print("Outbound total pkts: " + str(pf_dict[ip][1][0]))
+    print("Outbound total bytes: " + str(pf_dict[ip][1][1]))
+    print("Inbound total pkts: " + str(pf_dict[ip][1][2]))
+    print("Inbound total bytes: " + str(pf_dict[ip][1][3]))
+    print("========== " + "Detailed port information" " ================================================")
+    for i, (k, v) in enumerate(pf_dict[ip][2].items()):
+        print(k + ": " + str(v))
+    print("========== " + "End" " ======================================================================")
+    print()
+    print()
+
 
 def print_nth_simplified_profile(file,num):
     # print the nth element in the simplified profile dictionary
@@ -127,6 +168,10 @@ if __name__ == "__main__":
                     python3 print_pf.py -nth_pf "results/8.17_profile_results.txt" -nth 20
                 Print the 20th simplified profile from "results/8.17_simplified_profile_results.txt":
                     python3 print_pf.py -nth_spf "results/8.17_simplified_profile_results.txt" -nth 20
+                Print the IP address 65.89.253.157's profile from "results/8.17_profile_results.txt"
+                    python3 print_pf.py -ip_pf "results/8.17_profile_results.txt" -ip "65.89.253.157"
+                Print the IP address 65.89.253.157's simplified profile from "results/8.17_profile_results.txt"
+                    python3 print_pf.py -ip_spf "results/8.17_simplified_profile_results.txt" -ip "65.89.253.157"
         '''))
     parser.add_argument('-spf', type=str, help='The path of the simplified profile you want to print. For example: \"results/8.17_simplified_profile_results.txt\".')
     parser.add_argument('-nth_spf', type=str, help='The path of the simplified profile you want to print(the nth item). For example: \"results/8.17_simplified_profile_results.txt\".')
@@ -134,6 +179,9 @@ if __name__ == "__main__":
     parser.add_argument('-nth_pf', type=str, help='The path of the profile you want to print (the nth item). For example: \"results/8.17_profile_results.txt\".')
     parser.add_argument('-n', type=int, help='The number of items you want to print. For example: 20.')
     parser.add_argument('-nth', type=int, help='The nth item you want to print. For example: 20.')
+    parser.add_argument('-ip_pf', type=str, help='The path of the profile you want to print (for an IP address). For example: \"results/8.17_profile_results.txt\".')
+    parser.add_argument('-ip_spf', type=str, help='The path of the simplified profile you want to print (for an IP address). For example: \"results/8.17_simplified_profile_results.txt\".')
+    parser.add_argument('-ip', type=str, help='The ip you want to print. For example: \"65.89.253.157\".')
     args = parser.parse_args()
 
     if args.pf:
@@ -144,3 +192,7 @@ if __name__ == "__main__":
         print_nth_profile(args.nth_pf, args.nth)
     elif args.nth_spf:
         print_nth_simplified_profile(args.nth_spf, args.nth)
+    elif args.ip_pf:
+        print_ip_profile(args.ip_pf, args.ip)
+    elif args.ip_spf:
+        print_ip_simplified_profile(args.ip_spf, args.ip)
