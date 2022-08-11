@@ -10,11 +10,10 @@ def paint(out_service_matrix_index, normalized_out_service_matrix, out_noservice
     # Z = np.random.rand(6, 10)
 
     x = np.arange(-0.5, 288, 1)  # len = 11
-    number_of_ports = len(normalized_in_noservice_matrix)
-    print(number_of_ports)
-    y = np.arange(-0.5, number_of_ports, 1)  # len = 7
+    in_noservice_port_num = len(normalized_in_noservice_matrix)
+    print(in_noservice_port_num)
+    y = np.arange(-0.5, in_noservice_port_num, 1)
     Z = np.array(normalized_in_noservice_matrix)
-    # newcmp = LinearSegmentedColormap('testCmap', ["#FFFFFF", "#000000"], N=256)
     fig, ax = plt.subplots()
     ax.pcolormesh(x, y, Z, cmap='binary',vmin=0, vmax=1)
     plt.show()
