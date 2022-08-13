@@ -6,16 +6,14 @@ import argparse
 import profile_analysis as pf_a
 
 def paint(out_service_matrix_index, normalized_out_service_matrix, out_noservice_matrix_index, normalized_out_noservice_matrix, in_service_matrix_index, normalized_in_service_matrix, in_noservice_matrix_index, normalized_in_noservice_matrix):
-    # np.random.seed(19680801)
-    # Z = np.random.rand(6, 10)
 
-    x = np.arange(-0.5, 288, 1)  # len = 11
+    x_out_service = np.arange(-0.5, 288, 1)  # len = 11
     in_noservice_port_num = len(normalized_in_noservice_matrix)
     print(in_noservice_port_num)
-    y = np.arange(-0.5, in_noservice_port_num, 1)
-    Z = np.array(normalized_in_noservice_matrix)
+    y_out_service = np.arange(-0.5, in_noservice_port_num, 1)
+    Z_out_service = np.array(normalized_in_noservice_matrix)
     fig, ax = plt.subplots()
-    ax.pcolormesh(x, y, Z, cmap='binary',vmin=0, vmax=1)
+    ax.pcolormesh(x_out_service, y_out_service, Z_out_service, cmap='binary', vmin=0, vmax=1)
     plt.show()
 
 if __name__ == "__main__":
