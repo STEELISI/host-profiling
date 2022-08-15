@@ -8,6 +8,16 @@ import profile_analysis as pf_a
 def paint(out_service_matrix_index, normalized_out_service_matrix, out_noservice_matrix_index, normalized_out_noservice_matrix, in_service_matrix_index, normalized_in_service_matrix, in_noservice_matrix_index, normalized_in_noservice_matrix):
 
     fig, ax = plt.subplots()
+    def _frame(ax, x, y):
+        # draw the frame of the profile 
+        x_min = min(x)
+        x_max = max(x)
+        y_min = min(y)
+        y_max = max(y)
+        ax.plot([x_min, x_max], [y_max, y_max], color='k')
+        ax.plot([x_min, x_max], [y_min, y_min], color='k')
+        ax.plot([x_min, x_min], [y_min, y_max], color='k')
+        ax.plot([x_max, x_max], [y_min, y_max], color='k')
     
     # initialize x 
     # 24*12 = 288
@@ -21,13 +31,15 @@ def paint(out_service_matrix_index, normalized_out_service_matrix, out_noservice
     Z_out_service = np.array(normalized_out_service_matrix)
 
     ax.pcolormesh(x_out_service, y_out_service, Z_out_service, cmap='binary', vmin=0, vmax=1)
+    _frame(ax, x_out_service, y_out_service)
 
     out_noservice_port_num = len(normalized_out_noservice_matrix)
     # errors here 
-    y_out_noservice = np.arange(-1.5, out_noservice_port_num, -1)
+    y_out_noservice = np.arange(-1.5, -out_noservice_port_num-2, -1)
     Z_out_noservice = np.array(normalized_out_noservice_matrix)
 
     ax.pcolormesh(x_out_noservice, y_out_noservice, Z_out_noservice, cmap='binary', vmin=0, vmax=1)
+    _frame(ax, x_out_noservice, y_out_noservice)
 
     plt.show()
 
