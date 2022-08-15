@@ -31,7 +31,16 @@ def clustering(file):
     filename = os.path.join(dirname, file)
     spf_dict = ut.dict_read_from_file(filename)
 
-    print(spf_dict)
+    dataset = pd.DataFrame.from_dict({i: spf_dict[i] 
+                           for i in spf_dict.keys() 
+                           }, orient='index')
+    dataset = dataset.fillna(0)
+
+    print(dataset)
+
+    sns.clustermap(dataset, metric="correlation", cmap = 'binary')
+    plt.savefig('hierarchical_clustered_heatmap_with_Seaborn_clustermap_python_1st_try.pdf')
+
 
 
 if __name__ == "__main__":
