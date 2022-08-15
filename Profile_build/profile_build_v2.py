@@ -11,9 +11,7 @@ import os
 import argparse
 
 # each profile is a dictionary
-# {IP:[dict(), dict()]}
-# The first sub_dict is for outbound traffic
-# The second sub_dict is for inbound traffic
+# {IP: dict()}
 #
 # each item in the sub_dict looks like:
 #   For service-port-related:
@@ -98,7 +96,7 @@ def update_record(direction_flag, start_time, end_time, duration, ip1, ip1_port,
         # {IP:[dict(), dict()]}
         # The first sub_dict is for outbound traffic
         # The second sub_dict is for inbound traffic 
-        profile_dict[profile_ip]=[dict(),dict()]
+        profile_dict[profile_ip] = dict()
 
     start_timestamp = ut.datetime_to_timestamp(start_time)
     end_timestamp = ut.datetime_to_timestamp(end_time)
@@ -173,21 +171,46 @@ def add_record_to_profile(direction_flag, timestamp, ip, ip_port, another_port, 
 
     # outbound traffic 
     if direction_flag == 1:
-        record_key = ut.timestamp_to_datetime(start) + "-" + ut.timestamp_to_datetime(end) + "|" + port_mapping_v1(another_port, check_service_port(another_port, ip_port))
-        if record_key in profile_dict[ip][0]:
-            temp = profile_dict[ip][0][record_key]
-            profile_dict[ip][0][record_key] = [temp[0] + pkts, temp[1] + bytes]
-        else:
-            profile_dict[ip][0][record_key] = [pkts, bytes]
-
+        if check_service_port(ip_port, another_port) == 0:
+        # if the first port is the service port, then return 1
+        # if the second port is the service port, then return 2
+        # if both ports are service ports, then treat the smaller port as the service port
+        # if none of the ports are service ports, then return 0
+            record_key = ut.timestamp_to_datetime(start) + "-" + ut.timestamp_to_datetime(end) + "|" + port_mapping_v1(another_port, "out_to", "range")
+        elif check_service_port(ip_port, another_port) == 1:
+            record_key = ut.timestamp_to_datetime(start) + "-" + ut.timestamp_to_datetime(end) + "|" + port_mapping_v1(ip_port, "out_from", "specific")
+        elif check_service_port(ip_port, another_port) == 2:
+            record_key = ut.timestamp_to_datetime(start) + "-" + ut.timestamp_to_datetime(end) + "|" + port_mapping_v1(another_port, "out_to", "specific")
     # inbound traffic
     else:
-        record_key = ut.timestamp_to_datetime(start) + "-" + ut.timestamp_to_datetime(end) + "|" + port_mapping_v1(ip_port, check_service_port(ip_port, another_port))
-        if record_key in profile_dict[ip][1]:
-            temp = profile_dict[ip][1][record_key]
-            profile_dict[ip][1][record_key] = [temp[0] + pkts, temp[1] + bytes]
-        else:
-            profile_dict[ip][1][record_key] = [pkts, bytes]
+        if check_service_port(ip_port, another_port) == 0:
+            record_key = ut.timestamp_to_datetime(start) + "-" + ut.timestamp_to_datetime(end) + "|" + port_mapping_v1(ip_port, "in_to", "range")
+        elif check_service_port(ip_port, another_port) == 1:
+            record_key = ut.timestamp_to_datetime(start) + "-" + ut.timestamp_to_datetime(end) + "|" + port_mapping_v1(ip_port, "in_to", "specific")
+        elif check_service_port(ip_port, another_port) == 2:
+            record_key = ut.timestamp_to_datetime(start) + "-" + ut.timestamp_to_datetime(end) + "|" + port_mapping_v1(another_port, "in_from", "specific")
+        
+    if record_key in profile_dict[ip]:
+        temp = profile_dict[ip][record_key]
+        profile_dict[ip][record_key] = [temp[0] + pkts, temp[1] + bytes]
+    else:
+        profile_dict[ip][record_key] = [pkts, bytes]
+
+        # record_key = ut.timestamp_to_datetime(start) + "-" + ut.timestamp_to_datetime(end) + "|" + port_mapping_v1(another_port, check_service_port(another_port, ip_port))
+        # if record_key in profile_dict[ip][0]:
+        #     temp = profile_dict[ip][0][record_key]
+        #     profile_dict[ip][0][record_key] = [temp[0] + pkts, temp[1] + bytes]
+        # else:
+        #     profile_dict[ip][0][record_key] = [pkts, bytes]
+
+    # # inbound traffic
+    # else:
+    #     record_key = ut.timestamp_to_datetime(start) + "-" + ut.timestamp_to_datetime(end) + "|" + port_mapping_v1(ip_port, check_service_port(ip_port, another_port))
+    #     if record_key in profile_dict[ip][1]:
+    #         temp = profile_dict[ip][1][record_key]
+    #         profile_dict[ip][1][record_key] = [temp[0] + pkts, temp[1] + bytes]
+    #     else:
+    #         profile_dict[ip][1][record_key] = [pkts, bytes]
 
 def check_service_port(port1, port2):
     # check which port is the service port 
@@ -216,7 +239,7 @@ def check_service_port(port1, port2):
             return 0
 
 
-def port_mapping_v1(port, p_flag):
+def port_mapping_v1(port, indicator, range_flag):
     # map the port number to a port range (string)
     # p_flag indicated whether the port is a service port 
 
@@ -227,31 +250,30 @@ def port_mapping_v1(port, p_flag):
     
     port_num = int(float(port))
 
-    if p_flag == 1:
-        # it is a service port 
-        return port
-
-    # 0-10000: 
-    if port_num < 10000:
-        # 0-1000: every 100 
-        if port_num < 1000:
-            down_num = int(port_num/100) * 100
-            up_num = int(port_num/100) * 100 + 100
-        # 1000-10000: every 1000
-        else:
-            down_num = int(port_num/1000) * 1000
-            up_num = int(port_num/1000) * 1000 + 1000
-    # 10000-:
+    if range_flag == "specific":
+        return indicator + "|" + port
     else:
-        # 10000-50000: every 5000
-        if port_num < 50000:
-            down_num = int(port_num/5000) * 5000
-            up_num = int(port_num/5000) * 5000 + 5000
-        # 20000-:
+        # 0-10000: 
+        if port_num < 10000:
+            # 0-1000: every 100 
+            if port_num < 1000:
+                down_num = int(port_num/100) * 100
+                up_num = int(port_num/100) * 100 + 100
+            # 1000-10000: every 1000
+            else:
+                down_num = int(port_num/1000) * 1000
+                up_num = int(port_num/1000) * 1000 + 1000
+        # 10000-:
         else:
-            return "50000---"
-
-    return str(down_num)+'---'+str(up_num)
+            # 10000-50000: every 5000
+            if port_num < 50000:
+                down_num = int(port_num/5000) * 5000
+                up_num = int(port_num/5000) * 5000 + 5000
+            # 20000-:
+            else:
+                return "50000---"
+        
+        return indicator + "|" + str(down_num) + '---' + str(up_num)
 
 def time_mapping(time_input):
     # map the timestamp to 5 minutes (300s) round 
