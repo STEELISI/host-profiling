@@ -65,7 +65,17 @@ def clustering(file):
 
     print(dataset)
 
-    sns.clustermap(dataset, metric="correlation", cmap = 'binary')
+    samples_of_interest = ['Outbound|443|https', "Outbound|---|NON_SERVICE_PORT", "Inbound|---|NON_SERVICE_PORT", "Inbound|443|https", "Inbound|80|http"]
+    sample_labels = [i if i in samples_of_interest else None for i in dataset.columns]
+
+    g = sns.clustermap(dataset, metric="correlation",
+    cmap = 'binary',
+    xticklabels=sample_labels,
+    )
+    # plt.setp(g.ax_heatmap.xaxis.get_majorticklabels(), rotation=90)
+
+    # plt.show()
+
     plt.savefig('hierarchical_clustered_heatmap_with_Seaborn_clustermap_python_1st_try.pdf')
 
 
