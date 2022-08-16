@@ -404,6 +404,7 @@ def process_multiple_commands(netflow_path, profile_date_input, save_to_file):
 if __name__ == "__main__":
     # sample command: 
     # python3 profile_build.py -p "/Volumes/Laiky/FRGP_Netflow_ISI/validate/17" -t "20200817-0600" -r "profile_results.txt"
+    # python3 profile_build.py -p "/Volumes/Laiky/FRGP_Netflow_ISI/validate/18" -t "20200818-0600" -r "8.18_profile_results.txt"
 
     # process_single_command()
     # process_multiple_commands()
