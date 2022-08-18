@@ -294,7 +294,7 @@ def port_mapping_v1(port, indicator, range_flag):
                 up_num = int(port_num/5000) * 5000 + 5000
             # 20000-:
             else:
-                return "50000---"
+                return indicator + "|" + "50000---"
         
         return indicator + "|" + str(down_num) + '---' + str(up_num)
 
