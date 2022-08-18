@@ -59,6 +59,14 @@ def profile_build(flow_list):
         start_time = items[0].strip()
         end_time = items[1].strip()
         duration = float(items[2].strip())
+
+        # protocol and tcp flag 
+        prot = items[5].strip()
+        tcp_flag = items[6].strip()
+        # # test 
+        # print('|'+prot+'|')
+        # print('|'+tcp_flag+'|')
+
         pkts = int(items[7].strip())
         bytes = int(items[8].strip())
         # print(start_time, end_time, duration, pkts, bytes)
@@ -70,6 +78,20 @@ def profile_build(flow_list):
         prefix_flag = if_monitor(ip1, ip2)
         if prefix_flag == 0:
             continue
+        elif prefix_flag == 2:
+            # UDP flow from outside machine to FRGP machine - ignore. Not enough proof that that port is open.
+            if prot == '17':
+                continue
+            if prot == '6':
+                # TCP flow from outside machine to FRGP machine w PUSH or FIN - use, this is established connection. Remember that given port at FRGP is open
+                if 'P' in tcp_flag or 'F' in tcp_flag:
+                    update_record(prefix_flag, start_time, end_time, duration, ip1, ip1_port, ip2, ip2_port, pkts, bytes)
+                else:
+                    continue
+            else:
+                update_record(prefix_flag, start_time, end_time, duration, ip1, ip1_port, ip2, ip2_port, pkts, bytes)
+
+        # Keep all the traffic from FRGP to outside 
         else:
             update_record(prefix_flag, start_time, end_time, duration, ip1, ip1_port, ip2, ip2_port, pkts, bytes)
 
@@ -176,7 +198,7 @@ def add_record_to_profile(direction_flag, timestamp, ip, ip_port, another_port, 
         # if the second port is the service port, then return 2
         # if both ports are service ports, then treat the smaller port as the service port
         # if none of the ports are service ports, then return 0
-            record_key = ut.timestamp_to_datetime(start) + "-" + ut.timestamp_to_datetime(end) + "|" + port_mapping_v1(another_port, "out_to", "range")
+            record_key = ut.timestamp_to_datetime(start) + "-" + ut.timestamp_to_datetime(end) + "|" + port_mapping_v1(ip_port, "out_from", "range")
         elif check_service_port(ip_port, another_port) == 1:
             record_key = ut.timestamp_to_datetime(start) + "-" + ut.timestamp_to_datetime(end) + "|" + port_mapping_v1(ip_port, "out_from", "specific")
         elif check_service_port(ip_port, another_port) == 2:
@@ -189,7 +211,8 @@ def add_record_to_profile(direction_flag, timestamp, ip, ip_port, another_port, 
             record_key = ut.timestamp_to_datetime(start) + "-" + ut.timestamp_to_datetime(end) + "|" + port_mapping_v1(ip_port, "in_to", "specific")
         elif check_service_port(ip_port, another_port) == 2:
             record_key = ut.timestamp_to_datetime(start) + "-" + ut.timestamp_to_datetime(end) + "|" + port_mapping_v1(another_port, "in_from", "specific")
-        
+    
+    # print(ip+">"+record_key+">"+str(pkts)+">"+str(bytes))
     if record_key in profile_dict[ip]:
         temp = profile_dict[ip][record_key]
         profile_dict[ip][record_key] = [temp[0] + pkts, temp[1] + bytes]

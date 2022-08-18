@@ -116,8 +116,10 @@ def visual_simplified_profile(file, ip):
 if __name__ == "__main__":
     print("Visualizing ......")
     # out_service_matrix_index, normalized_out_service_matrix, out_noservice_matrix_index, normalized_out_noservice_matrix, in_service_matrix_index, normalized_in_service_matrix, in_noservice_matrix_index, normalized_in_noservice_matrix = pf_a.generate_normalized_profile_martix("results/8.18_profile_results.txt", "65.89.253.157", 2)
-    # # out_service_matrix_index, normalized_out_service_matrix, out_noservice_matrix_index, normalized_out_noservice_matrix, in_service_matrix_index, normalized_in_service_matrix, in_noservice_matrix_index, normalized_in_noservice_matrix = pf_a.generate_normalized_profile_martix("results/8.18_profile_results.txt", "68.158.58.84", 2)
+    # out_service_matrix_index, normalized_out_service_matrix, out_noservice_matrix_index, normalized_out_noservice_matrix, in_service_matrix_index, normalized_in_service_matrix, in_noservice_matrix_index, normalized_in_noservice_matrix = pf_a.generate_normalized_profile_martix("results/8.18_profile_results.txt", "68.158.58.84", 2)
+    out_service_matrix_index, normalized_out_service_matrix, out_noservice_matrix_index, normalized_out_noservice_matrix, in_service_matrix_index, normalized_in_service_matrix, in_noservice_matrix_index, normalized_in_noservice_matrix = pf_a.generate_normalized_profile_martix("results/8.18_profile_results.txt", "14.181.124.20", 2)
 
-    # paint_profile(out_service_matrix_index, normalized_out_service_matrix, out_noservice_matrix_index, normalized_out_noservice_matrix, in_service_matrix_index, normalized_in_service_matrix, in_noservice_matrix_index, normalized_in_noservice_matrix)
+    paint_profile(out_service_matrix_index, normalized_out_service_matrix, out_noservice_matrix_index, normalized_out_noservice_matrix, in_service_matrix_index, normalized_in_service_matrix, in_noservice_matrix_index, normalized_in_noservice_matrix)
 
-    visual_simplified_profile("results/8.17_simplified_profile_results.txt", "68.158.58.84")
+    # visual_simplified_profile("results/8.17_simplified_profile_results.txt", "68.158.58.84")
+    # visual_simplified_profile("results/8.17_simplified_profile_results.txt", "14.181.124.20")
