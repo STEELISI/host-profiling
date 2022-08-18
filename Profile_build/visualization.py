@@ -38,9 +38,11 @@ def paint_profile(out_service_matrix_index, normalized_out_service_matrix, out_n
 
     # print(Z_out_service)
 
-    # check if the profile part exisit 
+    # check if the profile part exisit
+    v_min = 0
+    v_max = 1
     if len(Z_out_service) != 0:
-        axs[0].pcolormesh(x_out_service, y_out_service, Z_out_service, cmap='binary', vmin=0, vmax=1)
+        axs[0].pcolormesh(x_out_service, y_out_service, Z_out_service, cmap='binary', vmin=v_min, vmax=v_max)
     _frame(axs[0], x_out_service, y_out_service)
 
     out_noservice_port_num = len(normalized_out_noservice_matrix)
@@ -48,7 +50,7 @@ def paint_profile(out_service_matrix_index, normalized_out_service_matrix, out_n
     Z_out_noservice = np.array(normalized_out_noservice_matrix)
 
     if len(Z_out_noservice) != 0:
-        axs[0].pcolormesh(x_out_noservice, y_out_noservice, Z_out_noservice, cmap='binary', vmin=0, vmax=1)
+        axs[0].pcolormesh(x_out_noservice, y_out_noservice, Z_out_noservice, cmap='binary', vmin=v_min, vmax=v_max)
     _frame(axs[0], x_out_noservice, y_out_noservice)
 
     # draw inbound traffic
@@ -57,7 +59,7 @@ def paint_profile(out_service_matrix_index, normalized_out_service_matrix, out_n
     Z_in_service = np.array(normalized_in_service_matrix)
 
     if len(Z_in_service) != 0:
-        axs[1].pcolormesh(x_in_service, y_in_service, Z_in_service, cmap='binary', vmin=0, vmax=1)
+        axs[1].pcolormesh(x_in_service, y_in_service, Z_in_service, cmap='binary', vmin=v_min, vmax=v_max)
     _frame(axs[1], x_in_service, y_in_service)
 
     in_noservice_port_num = len(normalized_in_noservice_matrix)
@@ -65,7 +67,7 @@ def paint_profile(out_service_matrix_index, normalized_out_service_matrix, out_n
     Z_in_noservice = np.array(normalized_in_noservice_matrix)
 
     if len(Z_in_noservice) != 0:
-        axs[1].pcolormesh(x_in_noservice, y_in_noservice, Z_in_noservice, cmap='binary', vmin=0, vmax=1)
+        axs[1].pcolormesh(x_in_noservice, y_in_noservice, Z_in_noservice, cmap='binary', vmin=v_min, vmax=v_max)
     _frame(axs[1], x_in_noservice, y_in_noservice)
 
     plt.show()
@@ -117,7 +119,8 @@ if __name__ == "__main__":
     print("Visualizing ......")
     # out_service_matrix_index, normalized_out_service_matrix, out_noservice_matrix_index, normalized_out_noservice_matrix, in_service_matrix_index, normalized_in_service_matrix, in_noservice_matrix_index, normalized_in_noservice_matrix = pf_a.generate_normalized_profile_martix("results/8.18_profile_results.txt", "65.89.253.157", 2)
     # out_service_matrix_index, normalized_out_service_matrix, out_noservice_matrix_index, normalized_out_noservice_matrix, in_service_matrix_index, normalized_in_service_matrix, in_noservice_matrix_index, normalized_in_noservice_matrix = pf_a.generate_normalized_profile_martix("results/8.18_profile_results.txt", "68.158.58.84", 2)
-    out_service_matrix_index, normalized_out_service_matrix, out_noservice_matrix_index, normalized_out_noservice_matrix, in_service_matrix_index, normalized_in_service_matrix, in_noservice_matrix_index, normalized_in_noservice_matrix = pf_a.generate_normalized_profile_martix("results/8.18_profile_results.txt", "14.181.124.20", 2)
+    # out_service_matrix_index, normalized_out_service_matrix, out_noservice_matrix_index, normalized_out_noservice_matrix, in_service_matrix_index, normalized_in_service_matrix, in_noservice_matrix_index, normalized_in_noservice_matrix = pf_a.generate_normalized_profile_martix("results/8.18_profile_results.txt", "14.181.124.20", 2)
+    out_service_matrix_index, normalized_out_service_matrix, out_noservice_matrix_index, normalized_out_noservice_matrix, in_service_matrix_index, normalized_in_service_matrix, in_noservice_matrix_index, normalized_in_noservice_matrix = pf_a.generate_normalized_profile_martix("results/8.18_profile_results.txt", "14.181.126.240", 2)
 
     paint_profile(out_service_matrix_index, normalized_out_service_matrix, out_noservice_matrix_index, normalized_out_noservice_matrix, in_service_matrix_index, normalized_in_service_matrix, in_noservice_matrix_index, normalized_in_noservice_matrix)
 
