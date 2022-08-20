@@ -71,6 +71,10 @@ def profile_build(flow_list):
         bytes = int(items[8].strip())
         # print(start_time, end_time, duration, pkts, bytes)
 
+        # only keep TCP and UDP traffic 
+        if prot != "17" and prot != "6":
+            continue
+
         # 1 if the first ip is in the prefixes but the second is not
         # 2 if the second ip is in the prefixes but the first is not
         # 0 if all the ips are in the prefixes or none of the ips are in the prefixes
