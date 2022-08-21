@@ -73,6 +73,7 @@ def profile_build(flow_list):
 
         # only keep TCP and UDP traffic 
         if prot != "17" and prot != "6":
+            # print(record)
             continue
 
         # 1 if the first ip is in the prefixes but the second is not
