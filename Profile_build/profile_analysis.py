@@ -38,7 +38,7 @@ def martixdict_to_matrix(matrix_dict, pkts_or_bytes = 2):
         else:
             service_matrix_index.append(k)
     
-    # sort from large to small 
+    # sort from small to large 
     def sort_key1(e):
             return int(e)
     service_matrix_index.sort(reverse = False, key = sort_key1)

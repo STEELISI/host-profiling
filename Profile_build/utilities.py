@@ -19,6 +19,27 @@ def get_files(path):
 
     return files
 
+def save_port_usage_to_file(port_usage_list, filename):
+    # save the port usage information to a file 
+    # line by line 
+
+    print("Start saving ......")
+    saving_start_time = time.time()
+    
+    # read the file name 
+    dirname = os.path.dirname(__file__)
+    absolute_filename = os.path.join(dirname, filename)
+
+    with open(absolute_filename, 'w') as port_usage_file:
+        num = 1
+        for item in port_usage_list:
+            port_usage_file.write(item[0] + "," + str(num) + "," + str(item[1][0]) + "," + str(item[1][1]) + "\n")
+            num += 1
+
+    saving_end_time = time.time()
+    saving_time_taken = saving_end_time - saving_start_time
+    print("Saving completed and toke " + str(saving_time_taken) + " s.")
+
 def read_command(filename):
     # read nfdump command 
     command = list()

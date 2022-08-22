@@ -78,9 +78,51 @@ def measure_traffic_out_service(flow_list):
     print("******************************")
 
 
+def port_usage_count(flow_list):
+    # count the usage of ports that are in the service port list 
+    global service_ports_dict
+    global port_usage_dict
+
+    for record in flow_list:
+        items = record.split("|")
+        # ip1 is the source ip 
+        # ip2 is the destination ip
+        ip1_and_port = items[3].strip().split(":")
+        ip2_and_port = items[4].strip().split(":")
+        ip1_port = ip1_and_port[1]
+        ip2_port = ip2_and_port[1]
+        pkts = int(items[7].strip())
+        bytes = int(items[8].strip())
+
+        # update the usage information if the port is in the service port list
+        # do this for all two ports
+        if ip1_port in service_ports_dict:
+            if ip1_port in port_usage_dict:
+                temp_pkts = port_usage_dict[ip1_port][0]
+                temp_bytes = port_usage_dict[ip1_port][1]
+                port_usage_dict[ip1_port][0] = temp_pkts + pkts
+                port_usage_dict[ip1_port][1] = temp_bytes + bytes
+            else:
+                port_usage_dict[ip1_port] = [pkts, bytes]
+            # print(port_usage_dict[ip1_port])
+        
+        if ip2_port in service_ports_dict:
+            if ip2_port in port_usage_dict:
+                temp_pkts = port_usage_dict[ip2_port][0]
+                temp_bytes = port_usage_dict[ip2_port][1]
+                port_usage_dict[ip2_port][0] = temp_pkts + pkts
+                port_usage_dict[ip2_port][1] = temp_bytes + bytes
+            else:
+                port_usage_dict[ip2_port] = [pkts, bytes]
+            # print(port_usage_dict[ip2_port])
+
 def measure_port_usage(path_of_files):
+    # read service ports 
     global service_ports_dict
     service_ports_dict = ut.service_port_to_dict("service-names-port-numbers.csv")
+
+    global port_usage_dict
+    port_usage_dict = {}
 
     files = ut.get_files(path_of_files)
 
@@ -112,16 +154,26 @@ def measure_port_usage(path_of_files):
             print("NetFlow input successfully!")
 
             # build profiles from the netflow data 
-            measure_traffic_out_service(NF_input)
-            # todo 
+            port_usage_count(NF_input)
             runtime_end = time.time()
             runtime = float(runtime_end - runtime_start)
 
-            print("~"*10 + " Profiles built for " + file + " " + "~"*10)
+            print("~"*10 + " Port usage counted for " + file + " " + "~"*10)
             print("~"*10 + " Toke " + str(runtime) +"s " + "~"*10)
     except Exception as e:
         print("An exception occurred when building profiles from the NetFlow data!")
         print(e)
+
+    print("Start converting to a list and sorting.")
+    port_usage_list = list(port_usage_dict.items())
+    # sort from large to small 
+    def sort_key1(e):
+        # return bytes 
+        return int(e[1][1])
+    port_usage_list.sort(reverse = True, key = sort_key1)
+
+    # save file 
+    ut.save_port_usage_to_file(port_usage_list, "service_port_usage_rank.csv")
     
     measure_end_time = time.time()
     measure_time_taken = measure_end_time - measure_start_time
