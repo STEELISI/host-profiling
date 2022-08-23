@@ -6,6 +6,7 @@ import utilities as ut
 import profile_build as pb
 import time
 import os
+import argparse
 
 def if_monitor(ip1,ip2):
     # check whether one of the two IP addresses are within the defined prefixes 
@@ -250,7 +251,14 @@ def number_of_items_in_dict(filename):
     print(len(ut.dict_read_from_file(filename)))
 
 if __name__ == "__main__":
+    # python3 measure.py -mpufa "/Volumes/Laiky/FRGP_Netflow_ISI/validate/17"  
+
     # measure_multiple()
     # number_of_items_in_dict("profile_results.txt")
 
-    measure_port_usage("/Volumes/Laiky/FRGP_Netflow_ISI/validate/17")
+    parser = argparse.ArgumentParser()
+    parser.add_argument('-mpufa', type=str, help='Count the port usage for all flows in the Netflow (not for each endpoint separately). Enter the path of Netflow, For example: \"/Volumes/Laiky/FRGP_Netflow_ISI/validate/17\".')
+    args = parser.parse_args()
+
+    if args.mpufa:
+        measure_port_usage(args.mpufa)
