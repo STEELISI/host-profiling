@@ -328,57 +328,19 @@ def run_bash(command,opt):
         p_status = p.wait()
         return output.decode('utf-8').strip()
 
-def process_single_command():
-
-    # which date the profile is
-    global profile_date
-    global profile_date_down_ts
-    global profile_date_up_ts  
-    profile_date = "20200817-0600"
-    profile_date_down_ts, profile_date_up_ts = ut.time_round_day_datetime(profile_date)
-
-    # initialize the profile dictionary
-    global profile_dict
-    profile_dict = dict()
-    # initialize and read the prefix
-    global nw_tree
-    nw_tree = rn.read_build_tree()
-    print("Successfully read the prefixes!")
-
-    # read command 
-    try:
-        # command = ut.read_command("/Users/yebof/Documents/host-profiling/Profile_build/NFDUMP_command/read_single_defined.txt")
-        command = ut.read_command("/Users/yebof/Documents/host-profiling/Profile_build/NFDUMP_command/read_single.txt")
-        command = ' '.join(command)
-        print("Successfully read the command:")
-        print("\t"+command)
-    except Exception as e:
-        print("An exception occurred when reading the command!")
-        print(e)
-
-    # run the command and read the Netflow data
-    try:
-        print("Inputting the NetFlow data now...")
-        # run with opt 2 as it is complicated output 
-        NF_input = run_bash(command,2)
-        NF_input = NF_input.strip().split("\n")
-        print("NetFlow input successfully!")
-    except Exception as e:
-        print("An exception occurred when building profiles from the NetFlow data!")
-        print(e)
-    
-    # build profiles from the netflow data 
-    profile_build(NF_input)
-
-    # print(profile_dict)
-    # TODO 
-
-def process_multiple_commands(netflow_path, profile_date_input, save_to_file):
+def process_multiple_commands(netflow_path, profile_date_input, port_usage_for_each_ip_file, save_to_file):
     # which date the profile is
     global profile_date
     global profile_date_down_ts
     global profile_date_up_ts
     global service_ports_dict
+
+    # load port usage dict (for each IP)
+    print("Loading port usage dict (for each IP) ......")
+    global port_usage_dict_for_IP
+    this_dirname = os.path.dirname(__file__)
+    port_usage_for_each_ip_filename = os.path.join(this_dirname, port_usage_for_each_ip_file)
+    port_usage_dict_for_IP = ut.dict_read_from_file(port_usage_for_each_ip_filename)
 
     ####################
     # UPDATE THIS!!!
@@ -455,7 +417,6 @@ if __name__ == "__main__":
     # sample command: 
     # python3 profile_build_v2.py -p "/Volumes/Laiky/FRGP_Netflow_ISI/validate/17" -t "20200817-0600" -r "results/8.17_profile_results_v2.txt"
 
-    # process_single_command()
     # process_multiple_commands()
 
     parser = argparse.ArgumentParser()
