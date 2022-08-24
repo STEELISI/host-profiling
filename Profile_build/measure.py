@@ -203,6 +203,9 @@ def measure_port_usage_for_each_ip(path_of_files, save_to_file):
     # initialize the dict to store the results (port usage for each endpoint)
     global port_usage_dict_for_IP
     port_usage_dict_for_IP = {}
+    # {IP:[{},{}]}
+    # The first sub dict {internal_port:[flow_num, pkts, bytes]}
+    # The second sub dict {remote_port:[flow_num, pkts, bytes]}
 
     files = ut.get_files(path_of_files)
 
