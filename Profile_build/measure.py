@@ -120,7 +120,7 @@ def port_usage_count(flow_list):
 
 def port_usage_count_for_each_IP(flow_list):
     global service_ports_dict
-    global port_usage_dict_for_IP
+    # global port_usage_dict_for_IP
 
     for record in flow_list:
         items = record.split("|")
@@ -133,11 +133,61 @@ def port_usage_count_for_each_IP(flow_list):
         ip1_port = ip1_and_port[1]
         ip2 = ip2_and_port[0]
         ip2_port = ip2_and_port[1]
+        prot = items[5].strip()
+        tcp_flag = items[6].strip()
         # print(ip1, ip1_port, ip2, ip2_port)
         pkts = int(items[7].strip())
         bytes = int(items[8].strip())
 
+        # only keep TCP and UDP traffic 
+        if prot != "17" and prot != "6":
+            # print(record)
+            continue
+
+        # 1 if the first ip is in the prefixes but the second is not
+        # 2 if the second ip is in the prefixes but the first is not
+        # 0 if all the ips are in the prefixes or none of the ips are in the prefixes
+        # we will skip case 0 
+        prefix_flag = if_monitor(ip1, ip2)
+        if prefix_flag == 0:
+            continue
+        elif prefix_flag == 2: # 2 if the second ip is in the prefixes but the first is not
+            # UDP flow from outside machine to FRGP machine - ignore. Not enough proof that that port is open.
+            if prot == '17':
+                continue
+            if prot == '6':
+                # TCP flow from outside machine to FRGP machine w PUSH or FIN - use, this is established connection. Remember that given port at FRGP is open
+                if 'P' in tcp_flag or 'F' in tcp_flag:
+                    update_port_usage_for_each_endpoint(ip2, ip2_port, ip1_port, pkts, bytes)
+                else:
+                    continue
+            else:
+                print("ERROR!") # for test
+
+        # Keep all the traffic from FRGP to outside 
+        else: # 1 if the first ip is in the prefixes but the second is not
+            update_port_usage_for_each_endpoint(ip1, ip1_port, ip2_port, pkts, bytes)
         
+
+def update_port_usage_for_each_endpoint(IP, internal_port, remote_port, pkts, bytes):
+    global port_usage_dict_for_IP
+
+    if IP not in port_usage_dict_for_IP:
+        port_usage_dict_for_IP[IP] = [{},{}]
+    
+    # update for internal port 
+    if internal_port in port_usage_dict_for_IP[IP][0]:
+        temp = port_usage_dict_for_IP[IP][0][internal_port]
+        port_usage_dict_for_IP[IP][0][internal_port] = [temp[0] + 1, temp[1] + pkts, temp[2] + bytes]
+    else:
+        port_usage_dict_for_IP[IP][0][internal_port] = [1, pkts, bytes]
+    
+    # update for external port 
+    if remote_port in port_usage_dict_for_IP[IP][1]:
+        temp2 = port_usage_dict_for_IP[IP][1][remote_port]
+        port_usage_dict_for_IP[IP][1][remote_port] = [temp2[0] + 1, temp2[1] + pkts, temp2[2] + bytes]
+    else:
+        port_usage_dict_for_IP[IP][1][remote_port] = [1, pkts, bytes]
 
 def measure_port_usage_for_each_ip(path_of_files, save_to_file):
     # Count the port usage for each endpoint separately. 
@@ -339,14 +389,19 @@ def number_of_items_in_dict(filename):
     print(len(ut.dict_read_from_file(filename)))
 
 if __name__ == "__main__":
-    # python3 measure.py -mpufa "/Volumes/Laiky/FRGP_Netflow_ISI/validate/17"  
+    # python3 measure.py -mpufa "/Volumes/Laiky/FRGP_Netflow_ISI/validate/17"
+    # python3 measure.py -port_usage_for_each_endpoint "/Volumes/Laiky/FRGP_Netflow_ISI/validate/17" -save_to "8.17_port_usage_for_each_endpoint.json"
 
     # measure_multiple()
     # number_of_items_in_dict("profile_results.txt")
 
     parser = argparse.ArgumentParser()
     parser.add_argument('-mpufa', type=str, help='Count the port usage for all flows in the Netflow (not for each endpoint separately). Enter the path of Netflow, For example: \"/Volumes/Laiky/FRGP_Netflow_ISI/validate/17\".')
+    parser.add_argument('-port_usage_for_each_endpoint', type=str, help="Count the port usage for each endpoint separately. Enter the path of Netflow, For example: \"/Volumes/Laiky/FRGP_Netflow_ISI/validate/17\".")
+    parser.add_argument('-save_to', type=str, help="Save the result to. For example: \"/8.17_port_usage_for_each_endpoint.json\".")
     args = parser.parse_args()
 
     if args.mpufa:
         measure_port_usage(args.mpufa)
+    elif args.port_usage_for_each_endpoint and args.save_to:
+        measure_port_usage_for_each_ip(args.port_usage_for_each_endpoint, args.save_to)
