@@ -198,23 +198,23 @@ def add_record_to_profile(direction_flag, timestamp, ip, ip_port, another_port, 
 
     # outbound traffic 
     if direction_flag == 1:
-        if check_service_port(ip_port, another_port) == 0:
+        if check_service_port(ip, ip_port, another_port) == 0:
         # if the first port is the service port, then return 1
         # if the second port is the service port, then return 2
         # if both ports are service ports, then treat the smaller port as the service port
         # if none of the ports are service ports, then return 0
             record_key = ut.timestamp_to_datetime(start) + "-" + ut.timestamp_to_datetime(end) + "|" + port_mapping_v1(ip_port, "out_from", "range")
-        elif check_service_port(ip_port, another_port) == 1:
+        elif check_service_port(ip, ip_port, another_port) == 1:
             record_key = ut.timestamp_to_datetime(start) + "-" + ut.timestamp_to_datetime(end) + "|" + port_mapping_v1(ip_port, "out_from", "specific")
-        elif check_service_port(ip_port, another_port) == 2:
+        elif check_service_port(ip, ip_port, another_port) == 2:
             record_key = ut.timestamp_to_datetime(start) + "-" + ut.timestamp_to_datetime(end) + "|" + port_mapping_v1(another_port, "out_to", "specific")
     # inbound traffic
     else:
-        if check_service_port(ip_port, another_port) == 0:
+        if check_service_port(ip, ip_port, another_port) == 0:
             record_key = ut.timestamp_to_datetime(start) + "-" + ut.timestamp_to_datetime(end) + "|" + port_mapping_v1(ip_port, "in_to", "range")
-        elif check_service_port(ip_port, another_port) == 1:
+        elif check_service_port(ip, ip_port, another_port) == 1:
             record_key = ut.timestamp_to_datetime(start) + "-" + ut.timestamp_to_datetime(end) + "|" + port_mapping_v1(ip_port, "in_to", "specific")
-        elif check_service_port(ip_port, another_port) == 2:
+        elif check_service_port(ip, ip_port, another_port) == 2:
             record_key = ut.timestamp_to_datetime(start) + "-" + ut.timestamp_to_datetime(end) + "|" + port_mapping_v1(another_port, "in_from", "specific")
     
     # print(ip+">"+record_key+">"+str(pkts)+">"+str(bytes))
@@ -240,7 +240,7 @@ def add_record_to_profile(direction_flag, timestamp, ip, ip_port, another_port, 
     #     else:
     #         profile_dict[ip][1][record_key] = [pkts, bytes]
 
-def check_service_port(port1, port2):
+def check_service_port(ip, port1, port2):
     # check which port is the service port 
     # 
     # if the first port is the service port, then return 1
@@ -249,10 +249,30 @@ def check_service_port(port1, port2):
     # if none of the ports are service ports, then return 0
 
     global service_ports_dict
+    global port_usage_dict_for_IP
+
     if port1 in service_ports_dict:
         if port2 in service_ports_dict:
             # two ports all in service port dict
-            if float(port1) <= float(port2):
+            if ip in port_usage_dict_for_IP:
+                if port1 in port_usage_dict_for_IP[ip][0] and port2 in port_usage_dict_for_IP[ip][1]:
+                    if port_usage_dict_for_IP[ip][0][port1][2] >  port_usage_dict_for_IP[ip][1][port2][2]:
+                        return 1
+                    elif port_usage_dict_for_IP[ip][0][port1][2] <  port_usage_dict_for_IP[ip][1][port2][2]:
+                        return 2
+                    elif float(port1) <= float(port2):
+                        # only treats the smaller one as the service port 
+                        return 1
+                    else:
+                        return 2
+                elif float(port1) <= float(port2):
+                    # only treats the smaller one as the service port 
+                    print("outlier!!!!!!")
+                    return 1
+                else:
+                    print("outlier!!!!!!")
+                    return 2
+            elif float(port1) <= float(port2):
                 # only treats the smaller one as the service port 
                 return 1
             else:
@@ -415,17 +435,18 @@ def process_multiple_commands(netflow_path, profile_date_input, port_usage_for_e
 
 if __name__ == "__main__":
     # sample command: 
-    # python3 profile_build_v2.py -p "/Volumes/Laiky/FRGP_Netflow_ISI/validate/17" -t "20200817-0600" -r "results/8.17_profile_results_v2.txt"
+    # python3 profile_build_v2.py -p "/Volumes/Laiky/FRGP_Netflow_ISI/validate/17" -t "20200817-0600" -port_usage_for_each_endpoint "8.17_port_usage_for_each_endpoint.json" -r "results/8.17_profile_results_v2.txt"
 
     # process_multiple_commands()
 
     parser = argparse.ArgumentParser()
     parser.add_argument('-p', type=str, required=True, help='The path of Netflow files. For example: \"/Volumes/Laiky/FRGP_Netflow_ISI/validate/17\".')
     parser.add_argument('-t', type=str, required=True, help='The time and timezone difference. For example: \"20200817-0600\".')
+    parser.add_argument('-port_usage_for_each_endpoint', type=str, required=True, help='The path of dict with port usage for each endpoint. For example: \"8.17_port_usage_for_each_endpoint.json\".')
     parser.add_argument('-r', type=str, required=True, help='Which file should it save results to. For example: \"profile_results.txt\".')
     args = parser.parse_args()
 
     res_dirname = os.path.dirname(__file__)
     res_filename = os.path.join(res_dirname, args.r)
     
-    process_multiple_commands(args.p, args.t, res_filename)
+    process_multiple_commands(args.p, args.t, args.port_usage_for_each_endpoint, res_filename)
