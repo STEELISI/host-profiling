@@ -261,6 +261,10 @@ def check_service_port(ip, port1, port2):
                     elif port_usage_dict_for_IP[ip][0][port1][2] <  port_usage_dict_for_IP[ip][1][port2][2]:
                         return 2
                     elif float(port1) <= float(port2):
+                        # if port1 != port2:
+                        #     print("Equal!!!!!!!!!!!!")
+                        #     print(ip+" "+port1+" "+port2)
+                        
                         # only treats the smaller one as the service port 
                         return 1
                     else:

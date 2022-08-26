@@ -119,7 +119,6 @@ def port_usage_count(flow_list):
             # print(port_usage_dict[ip2_port])
 
 def port_usage_count_for_each_IP(flow_list):
-    global service_ports_dict
     # global port_usage_dict_for_IP
 
     for record in flow_list:

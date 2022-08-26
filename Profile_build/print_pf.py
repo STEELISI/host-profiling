@@ -142,6 +142,13 @@ def print_n_profiles(file,num):
         print()
         print()
 
+def print_specific_item_in_dict(file, key):
+    dirname = os.path.dirname(__file__)
+    filename = os.path.join(dirname, file)
+    dict = ut.dict_read_from_file(filename)
+    print(dict[key])
+
+
 def print_n_simplified_profiles(file,num):
     # print the first n elements in the simplified profile dictionary
     
@@ -193,6 +200,8 @@ if __name__ == "__main__":
                     python3 print_pf.py -ip_spf "results/8.17_simplified_profile_results.txt" -ip "65.89.253.157"
                 Print the first 20 profiles (v2) from "results/8.17_profile_results_v2.txt":
                     python3 print_pf.py -pf_v2 "results/8.17_profile_results_v2.txt" -n 20
+                Print IP 42.128.166.100 in dict 8.17_port_usage_for_each_endpoint.json:
+                    python3 print_pf.py -dict "8.17_port_usage_for_each_endpoint.json" -ip "42.128.166.100"
         '''))
     parser.add_argument('-spf', type=str, help='The path of the simplified profile you want to print. For example: \"results/8.17_simplified_profile_results.txt\".')
     parser.add_argument('-nth_spf', type=str, help='The path of the simplified profile you want to print(the nth item). For example: \"results/8.17_simplified_profile_results.txt\".')
@@ -204,6 +213,7 @@ if __name__ == "__main__":
     parser.add_argument('-ip_spf', type=str, help='The path of the simplified profile you want to print (for an IP address). For example: \"results/8.17_simplified_profile_results.txt\".')
     parser.add_argument('-ip', type=str, help='The ip you want to print. For example: \"65.89.253.157\".')
     parser.add_argument('-pf_v2', type=str, help='The path of the profile you want to print. For example: \"results/8.17_profile_results_v2.txt\".')
+    parser.add_argument('-dict', type=str, help='The path of the dictionary you want to print. For example: \"results/8.17_profile_results_v2.txt\".')
     args = parser.parse_args()
 
     if args.pf:
@@ -220,3 +230,5 @@ if __name__ == "__main__":
         print_ip_simplified_profile(args.ip_spf, args.ip)
     elif args.pf_v2:
         print_n_profiles_v2(args.pf_v2, args.n)
+    elif args.dict:
+        print_specific_item_in_dict(args.dict, args.ip)
