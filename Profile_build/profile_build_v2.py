@@ -111,10 +111,12 @@ def update_record(direction_flag, start_time, end_time, duration, ip1, ip1_port,
         profile_ip = ip1
         profile_port = ip1_port
         another_port = ip2_port
+        another_ip = ip2
     else: # inbound
         profile_ip = ip2
         profile_port = ip2_port
         another_port = ip1_port
+        another_ip = ip1
 
     if profile_ip not in profile_dict:
         # initialize the profile for ip1
@@ -264,7 +266,7 @@ def check_service_port(ip, port1, port2):
                         # if port1 != port2:
                         #     print("Equal!!!!!!!!!!!!")
                         #     print(ip+" "+port1+" "+port2)
-                        
+
                         # only treats the smaller one as the service port 
                         return 1
                     else:
