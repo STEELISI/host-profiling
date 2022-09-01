@@ -133,7 +133,7 @@ def update_record(direction_flag, start_time, end_time, duration, ip1, ip1_port,
     # the duration of flow is 0
     if duration == 0:
         if profile_date_down_ts <= start_timestamp < profile_date_up_ts:
-            add_record_to_profile(direction_flag, start_timestamp, profile_ip, profile_port, another_port, pkts, bytes)
+            add_record_to_profile(direction_flag, start_timestamp, profile_ip, profile_port, another_port, another_ip, pkts, bytes)
     
     
     #       start_timestamp                                                      end_timestamp
@@ -151,7 +151,7 @@ def update_record(direction_flag, start_time, end_time, duration, ip1, ip1_port,
         # only within one unit 
         if start_s == start_e:
             if profile_date_down_ts <= start_timestamp < profile_date_up_ts:
-                add_record_to_profile(direction_flag, start_timestamp, profile_ip, profile_port, another_port, pkts, bytes)
+                add_record_to_profile(direction_flag, start_timestamp, profile_ip, profile_port, another_port, another_ip, pkts, bytes)
         
         # cross two units 
         else:
@@ -162,9 +162,9 @@ def update_record(direction_flag, start_time, end_time, duration, ip1, ip1_port,
             bytes1 = (duration1/duration) * bytes
             bytes2 = bytes - bytes1
             if profile_date_down_ts < end_s <= profile_date_up_ts:
-                add_record_to_profile(direction_flag, start_timestamp, profile_ip, profile_port, another_port, pkts1, bytes1)
+                add_record_to_profile(direction_flag, start_timestamp, profile_ip, profile_port, another_port, another_ip, pkts1, bytes1)
             if profile_date_down_ts < end_e <= profile_date_up_ts:
-                add_record_to_profile(direction_flag, end_timestamp, profile_ip, profile_port, another_port, pkts2, bytes2)
+                add_record_to_profile(direction_flag, end_timestamp, profile_ip, profile_port, another_port, another_ip, pkts2, bytes2)
     
     # cross more than two units 
     else:
@@ -177,9 +177,9 @@ def update_record(direction_flag, start_time, end_time, duration, ip1, ip1_port,
         bytes1 = (duration1/duration) * bytes
         bytes2 = (duration2/duration) * bytes
         if profile_date_down_ts < end_s <= profile_date_up_ts:
-                add_record_to_profile(direction_flag, start_timestamp, profile_ip, profile_port, another_port, pkts1, bytes1)
+                add_record_to_profile(direction_flag, start_timestamp, profile_ip, profile_port, another_port, another_ip, pkts1, bytes1)
         if profile_date_down_ts < end_e <= profile_date_up_ts:
-                add_record_to_profile(direction_flag, end_timestamp, profile_ip, profile_port, another_port, pkts2, bytes2)
+                add_record_to_profile(direction_flag, end_timestamp, profile_ip, profile_port, another_port, another_ip, pkts2, bytes2)
         if end_s != start_e:
             pkts_middle = (300/duration) * pkts
             bytes_middle = (300/duration) * bytes
@@ -188,11 +188,11 @@ def update_record(direction_flag, start_time, end_time, duration, ip1, ip1_port,
             # print(times)
             for i in range(times):
                 if profile_date_down_ts <= position_time < profile_date_up_ts:
-                    add_record_to_profile(direction_flag, position_time, profile_ip, profile_port, another_port, pkts_middle,bytes_middle)
+                    add_record_to_profile(direction_flag, position_time, profile_ip, profile_port, another_port, another_ip, pkts_middle, bytes_middle)
                 position_time += 300
 
 
-def add_record_to_profile(direction_flag, timestamp, ip, ip_port, another_port, pkts, bytes):
+def add_record_to_profile(direction_flag, timestamp, ip, ip_port, another_port, another_ip, pkts, bytes):
     # add the given information to the profile 
     global profile_dict
     start, end = time_mapping(timestamp)
