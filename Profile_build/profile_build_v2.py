@@ -125,7 +125,7 @@ def update_record(direction_flag, start_time, end_time, duration, ip1, ip1_port,
         # {IP:[dict(), dict()]}
         # The first sub_dict is for outbound traffic
         # The second sub_dict is for inbound traffic 
-        profile_dict[profile_ip] = dict()
+        profile_dict[profile_ip] = [dict(), dict()]
 
     start_timestamp = ut.datetime_to_timestamp(start_time)
     end_timestamp = ut.datetime_to_timestamp(end_time)
@@ -220,11 +220,11 @@ def add_record_to_profile(direction_flag, timestamp, ip, ip_port, another_port, 
             record_key = ut.timestamp_to_datetime(start) + "-" + ut.timestamp_to_datetime(end) + "|" + port_mapping_v1(another_port, "in_from", "specific")
     
     # print(ip+">"+record_key+">"+str(pkts)+">"+str(bytes))
-    if record_key in profile_dict[ip]:
-        temp = profile_dict[ip][record_key]
-        profile_dict[ip][record_key] = [temp[0] + pkts, temp[1] + bytes]
+    if record_key in profile_dict[ip][0]:
+        temp = profile_dict[ip][0][record_key]
+        profile_dict[ip][0][record_key] = [temp[0] + pkts, temp[1] + bytes]
     else:
-        profile_dict[ip][record_key] = [pkts, bytes]
+        profile_dict[ip][0][record_key] = [pkts, bytes]
 
         # record_key = ut.timestamp_to_datetime(start) + "-" + ut.timestamp_to_datetime(end) + "|" + port_mapping_v1(another_port, check_service_port(another_port, ip_port))
         # if record_key in profile_dict[ip][0]:
