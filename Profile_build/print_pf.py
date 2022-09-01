@@ -17,7 +17,10 @@ def print_n_profiles_v2(file,num):
         dict_key = next(it)
         print(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> " + str(dict_key) + " <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<")
         print("========== " + "Traffic" " ==================================================================")
-        for i, (k, v) in enumerate(pf_dict[dict_key].items()):
+        for i, (k, v) in enumerate(pf_dict[dict_key][0].items()):
+            print(k + ": " + str(v))
+        print("========== " + "IP" " ==================================================================")
+        for i, (k, v) in enumerate(pf_dict[dict_key][1].items()):
             print(k + ": " + str(v))
         print("========== " + "End" " ======================================================================")
         print()
@@ -199,7 +202,7 @@ if __name__ == "__main__":
                 Print the IP address 65.89.253.157's simplified profile from "results/8.17_profile_results.txt"
                     python3 print_pf.py -ip_spf "results/8.17_simplified_profile_results.txt" -ip "65.89.253.157"
                 Print the first 20 profiles (v2) from "results/8.17_profile_results_v2.txt":
-                    python3 print_pf.py -pf_v2 "results/8.17_profile_results_v2.txt" -n 20
+                    python3 print_pf.py -pf_v2 "results/8.17_profile_results_v2.json" -n 20
                 Print IP 42.128.166.100 in dict 8.17_port_usage_for_each_endpoint.json:
                     python3 print_pf.py -dict "8.17_port_usage_for_each_endpoint.json" -ip "42.128.166.100"
         '''))
@@ -212,7 +215,7 @@ if __name__ == "__main__":
     parser.add_argument('-ip_pf', type=str, help='The path of the profile you want to print (for an IP address). For example: \"results/8.17_profile_results.txt\".')
     parser.add_argument('-ip_spf', type=str, help='The path of the simplified profile you want to print (for an IP address). For example: \"results/8.17_simplified_profile_results.txt\".')
     parser.add_argument('-ip', type=str, help='The ip you want to print. For example: \"65.89.253.157\".')
-    parser.add_argument('-pf_v2', type=str, help='The path of the profile you want to print. For example: \"results/8.17_profile_results_v2.txt\".')
+    parser.add_argument('-pf_v2', type=str, help='The path of the profile you want to print. For example: \"results/8.17_profile_results_v2.json\".')
     parser.add_argument('-dict', type=str, help='The path of the dictionary you want to print. For example: \"results/8.17_profile_results_v2.txt\".')
     args = parser.parse_args()
 

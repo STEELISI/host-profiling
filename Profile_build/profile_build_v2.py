@@ -499,7 +499,7 @@ def process_multiple_commands(netflow_path, profile_date_input, port_usage_for_e
 
 if __name__ == "__main__":
     # sample command: 
-    # python3 profile_build_v2.py -p "/Volumes/Laiky/FRGP_Netflow_ISI/validate/17" -t "20200817-0600" -port_usage_for_each_endpoint "8.17_port_usage_for_each_endpoint.json" -r "results/8.17_profile_results_v2.txt"
+    # python3 profile_build_v2.py -p "/Volumes/Laiky/FRGP_Netflow_ISI/validate/17" -t "20200817-0600" -port_usage_for_each_endpoint "8.17_port_usage_for_each_endpoint.json" -r "results/8.17_profile_results_v2.json"
 
     # process_multiple_commands()
 
