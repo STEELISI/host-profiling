@@ -160,9 +160,6 @@ def port_usage_count_for_each_IP(flow_list):
                     update_port_usage_for_each_endpoint(ip2, ip2_port, ip1_port, pkts, bytes)
                 else:
                     continue
-            else:
-                print("ERROR!") # for test
-
         # Keep all the traffic from FRGP to outside 
         else: # 1 if the first ip is in the prefixes but the second is not
             update_port_usage_for_each_endpoint(ip1, ip1_port, ip2_port, pkts, bytes)

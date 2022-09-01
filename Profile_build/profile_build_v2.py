@@ -198,6 +198,8 @@ def add_record_to_profile(direction_flag, timestamp, ip, ip_port, another_port, 
     start, end = time_mapping(timestamp)
     # record_key = ut.timestamp_to_datetime(start) + "-" + ut.timestamp_to_datetime(end) + "|" + port_mapping_v1(ip_port)
 
+    time_index = ut.timestamp_to_datetime(start) + "-" + ut.timestamp_to_datetime(end)
+
     # outbound traffic 
     if direction_flag == 1:
         if check_service_port(ip, ip_port, another_port) == 0:
@@ -205,19 +207,25 @@ def add_record_to_profile(direction_flag, timestamp, ip, ip_port, another_port, 
         # if the second port is the service port, then return 2
         # if both ports are service ports, then treat the smaller port as the service port
         # if none of the ports are service ports, then return 0
-            record_key = ut.timestamp_to_datetime(start) + "-" + ut.timestamp_to_datetime(end) + "|" + port_mapping_v1(ip_port, "out_from", "range")
+            record_key = time_index + "|" + port_mapping_v1(ip_port, "out_from", "range")
+            IP_record_key = time_index + "|" + port_mapping_for_IP(ip_port, "range")
         elif check_service_port(ip, ip_port, another_port) == 1:
-            record_key = ut.timestamp_to_datetime(start) + "-" + ut.timestamp_to_datetime(end) + "|" + port_mapping_v1(ip_port, "out_from", "specific")
+            record_key = time_index + "|" + port_mapping_v1(ip_port, "out_from", "specific")
+            IP_record_key = time_index + "|" + port_mapping_for_IP(ip_port, "specific")
         elif check_service_port(ip, ip_port, another_port) == 2:
-            record_key = ut.timestamp_to_datetime(start) + "-" + ut.timestamp_to_datetime(end) + "|" + port_mapping_v1(another_port, "out_to", "specific")
+            record_key = time_index + "|" + port_mapping_v1(another_port, "out_to", "specific")
+            IP_record_key = time_index + "|" + port_mapping_for_IP(ip_port, "range")
     # inbound traffic
     else:
         if check_service_port(ip, ip_port, another_port) == 0:
-            record_key = ut.timestamp_to_datetime(start) + "-" + ut.timestamp_to_datetime(end) + "|" + port_mapping_v1(ip_port, "in_to", "range")
+            record_key = time_index + "|" + port_mapping_v1(ip_port, "in_to", "range")
+            IP_record_key = time_index + "|" + port_mapping_for_IP(ip_port, "range")
         elif check_service_port(ip, ip_port, another_port) == 1:
-            record_key = ut.timestamp_to_datetime(start) + "-" + ut.timestamp_to_datetime(end) + "|" + port_mapping_v1(ip_port, "in_to", "specific")
+            record_key = time_index + "|" + port_mapping_v1(ip_port, "in_to", "specific")
+            IP_record_key = time_index + "|" + port_mapping_for_IP(ip_port, "specific")
         elif check_service_port(ip, ip_port, another_port) == 2:
-            record_key = ut.timestamp_to_datetime(start) + "-" + ut.timestamp_to_datetime(end) + "|" + port_mapping_v1(another_port, "in_from", "specific")
+            record_key = time_index + "|" + port_mapping_v1(another_port, "in_from", "specific")
+            IP_record_key = time_index + "|" + port_mapping_for_IP(ip_port, "range")
     
     # print(ip+">"+record_key+">"+str(pkts)+">"+str(bytes))
     if record_key in profile_dict[ip][0]:
@@ -225,6 +233,27 @@ def add_record_to_profile(direction_flag, timestamp, ip, ip_port, another_port, 
         profile_dict[ip][0][record_key] = [temp[0] + pkts, temp[1] + bytes]
     else:
         profile_dict[ip][0][record_key] = [pkts, bytes]
+
+    # update the IP (topology)
+    if IP_record_key in profile_dict[ip][1]:
+        if another_ip in profile_dict[ip][1][IP_record_key]:
+            ip_temp_record = profile_dict[ip][1][IP_record_key][another_ip]
+            profile_dict[ip][1][IP_record_key][another_ip] = [ip_temp_record[0] + pkts, ip_temp_record[1] + bytes]
+        elif len(profile_dict[ip][1][IP_record_key]) < 20:
+            profile_dict[ip][1][IP_record_key][another_ip] = [pkts, bytes]
+        else:
+            # find the smallest one 
+            min_bytes = float("inf")
+            min_ip = "placeholder"
+            for index_num, (k, v) in enumerate(profile_dict[ip][1][IP_record_key].items()):
+                if min_bytes > v[1]:
+                    min_bytes = v[1]
+                    min_ip = k
+            if min_bytes < bytes:
+                del profile_dict[ip][1][IP_record_key][min_ip]
+                profile_dict[ip][1][IP_record_key][another_ip] = [pkts, bytes]
+    else:
+        profile_dict[ip][1][IP_record_key] = {another_ip:[pkts, bytes]}
 
         # record_key = ut.timestamp_to_datetime(start) + "-" + ut.timestamp_to_datetime(end) + "|" + port_mapping_v1(another_port, check_service_port(another_port, ip_port))
         # if record_key in profile_dict[ip][0]:
@@ -323,11 +352,40 @@ def port_mapping_v1(port, indicator, range_flag):
             if port_num < 50000:
                 down_num = int(port_num/5000) * 5000
                 up_num = int(port_num/5000) * 5000 + 5000
-            # 20000-:
+            # 50000-:
             else:
                 return indicator + "|" + "50000---"
         
         return indicator + "|" + str(down_num) + '---' + str(up_num)
+
+def port_mapping_for_IP(port, range_flag):
+    
+    if range_flag == "specific":
+        return port
+    else:
+        port_num = int(float(port))
+
+        if port_num < 10000:
+            # 0-1000: every 100 
+            if port_num < 1000:
+                down_num = int(port_num/100) * 100
+                up_num = int(port_num/100) * 100 + 100
+            # 1000-10000: every 1000
+            else:
+                down_num = int(port_num/1000) * 1000
+                up_num = int(port_num/1000) * 1000 + 1000
+        # 10000-:
+        else:
+            # 10000-50000: every 5000
+            if port_num < 50000:
+                down_num = int(port_num/5000) * 5000
+                up_num = int(port_num/5000) * 5000 + 5000
+            # 50000-:
+            else:
+                return "50000---"
+        
+        return str(down_num) + '---' + str(up_num)
+
 
 def time_mapping(time_input):
     # map the timestamp to 5 minutes (300s) round 
