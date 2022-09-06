@@ -239,19 +239,21 @@ def add_record_to_profile(direction_flag, timestamp, ip, ip_port, another_port, 
         if another_ip in profile_dict[ip][1][IP_record_key][1]:
             ip_temp_record = profile_dict[ip][1][IP_record_key][1][another_ip]
             profile_dict[ip][1][IP_record_key][1][another_ip] = [ip_temp_record[0] + pkts, ip_temp_record[1] + bytes]
-        elif len(profile_dict[ip][1][IP_record_key]) < 20:
-            profile_dict[ip][1][IP_record_key][another_ip] = [pkts, bytes]
+        elif profile_dict[ip][1][IP_record_key][0] == 'few':
+            profile_dict[ip][1][IP_record_key][1][another_ip] = [pkts, bytes]
+            if len(profile_dict[ip][1][IP_record_key][1])>10:
+                profile_dict[ip][1][IP_record_key][0] = 'many'
         else:
             # find the smallest one 
             min_bytes = float("inf")
             min_ip = "placeholder"
-            for index_num, (k, v) in enumerate(profile_dict[ip][1][IP_record_key].items()):
+            for index_num, (k, v) in enumerate(profile_dict[ip][1][IP_record_key][1].items()):
                 if min_bytes > v[1]:
                     min_bytes = v[1]
                     min_ip = k
             if min_bytes < bytes:
-                del profile_dict[ip][1][IP_record_key][min_ip]
-                profile_dict[ip][1][IP_record_key][another_ip] = [pkts, bytes]
+                del profile_dict[ip][1][IP_record_key][1][min_ip]
+                profile_dict[ip][1][IP_record_key][1][another_ip] = [pkts, bytes]
     else:
         profile_dict[ip][1][IP_record_key] = ['few', {another_ip:[pkts, bytes]}]
 
