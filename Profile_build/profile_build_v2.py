@@ -208,24 +208,24 @@ def add_record_to_profile(direction_flag, timestamp, ip, ip_port, another_port, 
         # if both ports are service ports, then treat the smaller port as the service port
         # if none of the ports are service ports, then return 0
             record_key = time_index + "|" + port_mapping_v1(ip_port, "out_from", "range")
-            IP_record_key = time_index + "|" + port_mapping_for_IP(ip_port, "range")
+            IP_record_key = port_mapping_for_IP(ip_port, "range")
         elif check_service_port(ip, ip_port, another_port) == 1:
             record_key = time_index + "|" + port_mapping_v1(ip_port, "out_from", "specific")
-            IP_record_key = time_index + "|" + port_mapping_for_IP(ip_port, "specific")
+            IP_record_key = port_mapping_for_IP(ip_port, "specific")
         elif check_service_port(ip, ip_port, another_port) == 2:
             record_key = time_index + "|" + port_mapping_v1(another_port, "out_to", "specific")
-            IP_record_key = time_index + "|" + port_mapping_for_IP(ip_port, "range")
+            IP_record_key = port_mapping_for_IP(ip_port, "range")
     # inbound traffic
     else:
         if check_service_port(ip, ip_port, another_port) == 0:
             record_key = time_index + "|" + port_mapping_v1(ip_port, "in_to", "range")
-            IP_record_key = time_index + "|" + port_mapping_for_IP(ip_port, "range")
+            IP_record_key = port_mapping_for_IP(ip_port, "range")
         elif check_service_port(ip, ip_port, another_port) == 1:
             record_key = time_index + "|" + port_mapping_v1(ip_port, "in_to", "specific")
-            IP_record_key = time_index + "|" + port_mapping_for_IP(ip_port, "specific")
+            IP_record_key = port_mapping_for_IP(ip_port, "specific")
         elif check_service_port(ip, ip_port, another_port) == 2:
             record_key = time_index + "|" + port_mapping_v1(another_port, "in_from", "specific")
-            IP_record_key = time_index + "|" + port_mapping_for_IP(ip_port, "range")
+            IP_record_key = port_mapping_for_IP(ip_port, "range")
     
     # print(ip+">"+record_key+">"+str(pkts)+">"+str(bytes))
     if record_key in profile_dict[ip][0]:
@@ -236,9 +236,9 @@ def add_record_to_profile(direction_flag, timestamp, ip, ip_port, another_port, 
 
     # update the IP (topology)
     if IP_record_key in profile_dict[ip][1]:
-        if another_ip in profile_dict[ip][1][IP_record_key]:
-            ip_temp_record = profile_dict[ip][1][IP_record_key][another_ip]
-            profile_dict[ip][1][IP_record_key][another_ip] = [ip_temp_record[0] + pkts, ip_temp_record[1] + bytes]
+        if another_ip in profile_dict[ip][1][IP_record_key][1]:
+            ip_temp_record = profile_dict[ip][1][IP_record_key][1][another_ip]
+            profile_dict[ip][1][IP_record_key][1][another_ip] = [ip_temp_record[0] + pkts, ip_temp_record[1] + bytes]
         elif len(profile_dict[ip][1][IP_record_key]) < 20:
             profile_dict[ip][1][IP_record_key][another_ip] = [pkts, bytes]
         else:
@@ -253,7 +253,7 @@ def add_record_to_profile(direction_flag, timestamp, ip, ip_port, another_port, 
                 del profile_dict[ip][1][IP_record_key][min_ip]
                 profile_dict[ip][1][IP_record_key][another_ip] = [pkts, bytes]
     else:
-        profile_dict[ip][1][IP_record_key] = {another_ip:[pkts, bytes]}
+        profile_dict[ip][1][IP_record_key] = ['few', {another_ip:[pkts, bytes]}]
 
         # record_key = ut.timestamp_to_datetime(start) + "-" + ut.timestamp_to_datetime(end) + "|" + port_mapping_v1(another_port, check_service_port(another_port, ip_port))
         # if record_key in profile_dict[ip][0]:
