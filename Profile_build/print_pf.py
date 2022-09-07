@@ -19,9 +19,9 @@ def print_n_profiles_v2(file,num):
         print("========== " + "Traffic" " ==================================================================")
         for i, (k, v) in enumerate(pf_dict[dict_key][0].items()):
             print(k + ": " + str(v))
-        print("========== " + "IP" " ==================================================================")
+        print("========== " + "restricted or unrestricted" " ===============================================")
         for i, (k, v) in enumerate(pf_dict[dict_key][1].items()):
-            print(k + ": " + str(v))
+            print(k + ": " + str(v[0]))
         print("========== " + "End" " ======================================================================")
         print()
         print()
