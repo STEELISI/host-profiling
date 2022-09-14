@@ -3,10 +3,17 @@
 import os
 import utilities as ut
 
-def separate_(file):
-    # print the first n elements in the profile dictionary
+def is_restricted():
+    # return 0 if this ip is not restricted
+    # return 1 if this ip is restricted
+    return 0
 
-    
+def has_bidirectional_traffic():
+    # return 0 if does not have bidirectional traffic
+    # return 1 if has bidirectional traffic
+    return 0
+
+def separate_ip(file):
 
     dirname = os.path.dirname(__file__)
     filename = os.path.join(dirname, file)
