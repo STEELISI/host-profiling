@@ -7,10 +7,20 @@ import utilities as ut
 def is_restricted(ip):
     # return 0 if this ip is not restricted
     # return 1 if this ip is restricted
+    # return 2 if this ip is invalid
 
     global profile_v2_dict
 
-    return 0
+    # profile_dict[ip][1][IP_record_key] = ['few', {another_ip:[pkts, bytes]}]
+
+    if ip not in profile_v2_dict:
+        return 2
+
+    for i, (k, v) in enumerate(profile_v2_dict[ip][1].items()):
+        # print(v[0])
+        if v[0] == 'many':
+            return 0
+    return 1
 
 def has_bidirectional_traffic(ip):
     # return 0 if does not have bidirectional traffic
@@ -19,9 +29,9 @@ def has_bidirectional_traffic(ip):
     global simplified_profile_dict
 
     if simplified_profile_dict[ip][1][1] >= 100 and simplified_profile_dict[ip][1][3] >= 100:
-        return 1
+        return True
     else:
-        return 0
+        return False
 
 def separate_ip(profile_v1_file, profile_v2_file, simplified_profile_file):
 
@@ -40,20 +50,35 @@ def separate_ip(profile_v1_file, profile_v2_file, simplified_profile_file):
     simplified_profile_dict = ut.dict_read_from_file(simplified_profile_filename)
 
     # extract all the IP addresses as a list
-    all_ip_list = list(profile_v1_filename.keys())
+    all_ip_list = list(profile_v1_dict.keys())
 
+    # classify all the ip addresses 
     single_directional_ip_list = []
     restricted_ip_list = []
     unrestricted_ip_list = []
 
     for ip in all_ip_list:
         if has_bidirectional_traffic(ip):
-            if is_restricted(ip):
+            if is_restricted(ip) == 1:
                 restricted_ip_list.append(ip)
-            else:
+            elif is_restricted(ip) == 0:
                 unrestricted_ip_list.append(ip)
+            elif is_restricted(ip) == 2:
+                single_directional_ip_list.append(ip)
         else:
             single_directional_ip_list.append(ip)
 
+    print("Invalid IP number: " + str(len(single_directional_ip_list)))
+    print("Restricted IP number: " + str(len(restricted_ip_list)))
+    print("Unrestricted IP number: " + str(len(unrestricted_ip_list)))
+
 if __name__ == "__main__":
-    print("running")
+    # python3 classify_endpoint.py -p_v1 "results/8.17_profile_results.txt" -p_v2 "results/8.17_profile_results_v2.json" -p_sf "results/8.17_simplified_profile_results.txt"
+
+    parser = argparse.ArgumentParser()
+    parser.add_argument('-p_v1', type=str, required=True, help='The path of profile (v1). For example: \"results/8.17_profile_results.txt\".')
+    parser.add_argument('-p_v2', type=str, required=True, help='The path of profile (v2). For example: \"results/8.17_profile_results_v2.json\".')
+    parser.add_argument('-p_sf', type=str, required=True, help='The path of profile (simplified). For example: \"results/8.17_simplified_profile_results.txt\".')
+    args = parser.parse_args()
+
+    separate_ip(args.p_v1, args.p_v2, args.p_sf)
