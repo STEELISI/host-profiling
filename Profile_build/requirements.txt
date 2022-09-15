@@ -2,3 +2,4 @@ matplotlib==3.5.1
 numpy==1.21.4
 pandas==1.3.5
 pysubnettree==0.35
+sklearn==0.0

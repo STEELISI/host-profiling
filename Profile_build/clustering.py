@@ -7,6 +7,34 @@ import utilities as ut
 import os
 import random
 import copy
+import pickle
+from sklearn.cluster import AgglomerativeClustering
+from matplotlib import pyplot as plt
+from scipy.cluster.hierarchy import dendrogram
+import numpy as np
+from joblib import dump, load
+
+def plot_dendrogram(model, **kwargs):
+    # Create linkage matrix and then plot the dendrogram
+
+    # create the counts of samples under each node
+    counts = np.zeros(model.children_.shape[0])
+    n_samples = len(model.labels_)
+    for i, merge in enumerate(model.children_):
+        current_count = 0
+        for child_idx in merge:
+            if child_idx < n_samples:
+                current_count += 1  # leaf node
+            else:
+                current_count += counts[child_idx - n_samples]
+        counts[i] = current_count
+
+    linkage_matrix = np.column_stack(
+        [model.children_, model.distances_, counts]
+    ).astype(float)
+
+    # Plot the corresponding dendrogram
+    dendrogram(linkage_matrix, **kwargs)
 
 def select_n_sp_randomly(n, from_file, to_file):
     dirname = os.path.dirname(__file__)
@@ -90,13 +118,56 @@ def clustering_seaborn(file):
 
 def clustering(ip_file, spf_file):
     print("Reading data from files......")
+    dirname = os.path.dirname(__file__)
+    ip_filename = os.path.join(dirname, ip_file)
+    spf_filename = os.path.join(dirname, spf_file)
+
+    ip_list = ut.read_list_from_file_linebyline(ip_filename)
+    spf_dict = ut.dict_read_from_file(spf_filename)
+
+    # print(len(ip_list))
+
+    input_data = dict()
+    count = 0
+    for ip in ip_list:
+        # count +=1
+        # print(count)
+        temp_dict = dict()
+        temp_dict = copy.deepcopy(spf_dict[ip][2])
+        input_data[ip] = dict()
+        for i, (k, v) in enumerate(temp_dict.items()):
+            input_data[ip][k] = v[1]
+    
+    print(len(input_data))
+
+    print("Preparing the dataset!")
+    dataset = pd.DataFrame.from_dict({i: input_data[i] 
+                           for i in input_data.keys() 
+                           }, orient='index')
+    dataset = dataset.fillna(0)
+
+
+    model = AgglomerativeClustering(distance_threshold=0, n_clusters=None, affinity = "euclidean")
+    print("Start clustering!")
+    model.fit(dataset)
+    print("Clustering done!")
+    print(model)
+
+    dump(model, 'filename.joblib') 
+
+    plt.title("Hierarchical Clustering Dendrogram")
+    # plot the top three levels of the dendrogram
+    plot_dendrogram(model, truncate_mode="level", p=1000)
+    plt.xlabel("Number of points in node (or index of point if no parenthesis).")
+    plt.show()
 
 
 
 if __name__ == "__main__":
     # select_n_sp_randomly(100, "results/8.17_simplified_profile_results.txt", "sampled_100_simplified_profile.txt")
     # select_n_sp_bidirectional_randomly(100, "results/8.17_simplified_profile_results.txt", "sampled_100_simplified_profile.txt")
-    # select_n_ip_randomly(2000,"8.17_unrestricted_ip.txt","2000_8.17_unrestricted_ip.txt")
-    # select_n_ip_randomly(2000,"8.17_restricted_ip.txt","2000_8.17_restricted_ip.txt")
+    # select_n_ip_randomly(200,"8.17_unrestricted_ip.txt","200_8.17_unrestricted_ip.txt")
+    # select_n_ip_randomly(200,"8.17_restricted_ip.txt","200_8.17_restricted_ip.txt")
 
-    clustering_seaborn("sampled_100_simplified_profile.txt")
+    # clustering_seaborn("sampled_100_simplified_profile.txt")
+    clustering("2000_8.17_unrestricted_ip.txt", "results/8.17_simplified_profile_results.txt")
