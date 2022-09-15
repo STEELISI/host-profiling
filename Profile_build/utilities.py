@@ -40,6 +40,15 @@ def save_port_usage_to_file(port_usage_list, filename):
     saving_time_taken = saving_end_time - saving_start_time
     print("Saving completed and toke " + str(saving_time_taken) + " s.")
 
+def save_list_to_file_linebyline(list, filename):
+    # read the file name 
+    dirname = os.path.dirname(__file__)
+    absolute_filename = os.path.join(dirname, filename)
+
+    with open(absolute_filename, 'w') as list_file:
+        for i in list:
+            list_file.write(i+'\n')
+
 def read_command(filename):
     # read nfdump command 
     command = list()
