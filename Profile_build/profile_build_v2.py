@@ -11,20 +11,20 @@ import os
 import argparse
 
 # each profile is a dictionary
-# {IP: dict()}
+# {IP: [dict(), dict()]}
 #
-# each item in the sub_dict looks like:
+# each item in the first sub_dict looks like:
 #   For service-port-related:
-#   "12:05-12:10|80": [12, 3000]
-#       ^         ^     ^    ^
-#       |         |     |    |
-#      time      port  pkts  bytes
+#   "12:05-12:10|out_from|80": [12, 3000]
+#       ^                  ^     ^    ^
+#       |                  |     |    |
+#      time              port  pkts  bytes
 #
 #   For non-service-port-related:
-#   "12:05-12:10|0-100": [12, 3000]
-#                 ^
-#                 |
-#        use a range to represent
+#   "12:05-12:10|in_to|0-100": [12, 3000]
+#                         ^
+#                         |
+#                        use a range to represent
 
 def if_monitor(ip1,ip2):
     # check whether one of the two IP addresses are within the defined prefixes 
