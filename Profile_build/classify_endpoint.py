@@ -76,9 +76,7 @@ def separate_ip(profile_v1_file, profile_v2_file, simplified_profile_file):
     ut.save_list_to_file_linebyline(single_directional_ip_list, "8.17_invalid_ip.txt")
     ut.save_list_to_file_linebyline(restricted_ip_list, "8.17_restricted_ip.txt")
     ut.save_list_to_file_linebyline(unrestricted_ip_list, "8.17_unrestricted_ip.txt")
-
-    return 1
-
+    print("Done!")
 
 if __name__ == "__main__":
     # python3 classify_endpoint.py -p_v1 "results/8.17_profile_results.txt" -p_v2 "results/8.17_profile_results_v2.json" -p_sf "results/8.17_simplified_profile_results.txt"

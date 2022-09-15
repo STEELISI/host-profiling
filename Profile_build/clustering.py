@@ -1,6 +1,5 @@
 # Yebo Feng 
 
-from fileinput import filename
 import pandas as pd
 import seaborn as sns
 import matplotlib.pyplot as plt
@@ -9,7 +8,7 @@ import os
 import random
 import copy
 
-def select_n_randomly(n, from_file, to_file):
+def select_n_sp_randomly(n, from_file, to_file):
     dirname = os.path.dirname(__file__)
     filename = os.path.join(dirname, from_file)
     spf_dict = ut.dict_read_from_file(filename)
@@ -28,7 +27,7 @@ def select_n_randomly(n, from_file, to_file):
     filename_write = os.path.join(to_dirname, to_file)
     ut.dict_write_to_file(new_dict, filename_write)
 
-def select_n_bidirectional_randomly(n, from_file, to_file):
+def select_n_bidirectional_sp_randomly(n, from_file, to_file):
     dirname = os.path.dirname(__file__)
     filename = os.path.join(dirname, from_file)
     spf_dict = ut.dict_read_from_file(filename)
@@ -55,7 +54,16 @@ def select_n_bidirectional_randomly(n, from_file, to_file):
     filename_write = os.path.join(to_dirname, to_file)
     ut.dict_write_to_file(new_dict, filename_write)
 
-def clustering(file):
+def select_n_ip_randomly(n, from_file, to_file):
+    dirname = os.path.dirname(__file__)
+    filename = os.path.join(dirname, from_file)
+    ip_list = ut.read_list_from_file_linebyline(filename)
+
+    res_list = random.choices(ip_list, k = n)
+    to_filename = os.path.join(dirname, to_file)
+    ut.save_list_to_file_linebyline(res_list, to_filename)
+
+def clustering_seaborn(file):
     dirname = os.path.dirname(__file__)
     filename = os.path.join(dirname, file)
     spf_dict = ut.dict_read_from_file(filename)
@@ -80,9 +88,15 @@ def clustering(file):
 
     plt.savefig('hierarchical_clustered_heatmap_with_Seaborn_clustermap_python_1st_try.pdf')
 
+def clustering(ip_file, spf_file):
+    print("Reading data from files......")
+
 
 
 if __name__ == "__main__":
-    # select_n_randomly(100, "results/8.17_simplified_profile_results.txt", "sampled_100_simplified_profile.txt")
-    # select_n_bidirectional_randomly(100, "results/8.17_simplified_profile_results.txt", "sampled_100_simplified_profile.txt")
-    clustering("sampled_100_simplified_profile.txt")
+    # select_n_sp_randomly(100, "results/8.17_simplified_profile_results.txt", "sampled_100_simplified_profile.txt")
+    # select_n_sp_bidirectional_randomly(100, "results/8.17_simplified_profile_results.txt", "sampled_100_simplified_profile.txt")
+    # select_n_ip_randomly(2000,"8.17_unrestricted_ip.txt","2000_8.17_unrestricted_ip.txt")
+    # select_n_ip_randomly(2000,"8.17_restricted_ip.txt","2000_8.17_restricted_ip.txt")
+
+    clustering_seaborn("sampled_100_simplified_profile.txt")

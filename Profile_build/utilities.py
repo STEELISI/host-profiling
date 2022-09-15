@@ -19,6 +19,13 @@ def get_files(path):
 
     return files
 
+def read_list_from_file_linebyline(filename):
+    res_list = []
+    with open(filename, 'r') as file:
+        text = file.read().strip()
+        res_list = text.split("\n")
+    return res_list
+
 def save_port_usage_to_file(port_usage_list, filename):
     # save the port usage information to a file 
     # line by line 
