@@ -26,6 +26,28 @@ def print_n_profiles_v2(file,num):
         print()
         print()
 
+def print_ip_profiles_v2(file,ip):
+    # print the ip in the v2 profile dictionary
+
+    dirname = os.path.dirname(__file__)
+    filename = os.path.join(dirname, file)
+    pf_dict = ut.dict_read_from_file(filename)
+
+    item = pf_dict[ip]
+
+    for i in range(num):
+        dict_key = next(it)
+        print(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> " + item + " <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<")
+        print("========== " + "Traffic" " ==================================================================")
+        for i, (k, v) in enumerate(item.items()):
+            print(k + ": " + str(v))
+        print("========== " + "restricted or unrestricted" " ===============================================")
+        for i, (k, v) in enumerate(item.items()):
+            print(k + ": " + str(v[0]))
+        print("========== " + "End" " ======================================================================")
+        print()
+        print()
+
 def print_ip_profile(file,ip):
     # print the profile of IP from dictionary
     
@@ -205,6 +227,8 @@ if __name__ == "__main__":
                     python3 print_pf.py -pf_v2 "results/8.17_profile_results_v2.json" -n 20
                 Print IP 42.128.166.100 in dict 8.17_port_usage_for_each_endpoint.json:
                     python3 print_pf.py -dict "8.17_port_usage_for_each_endpoint.json" -ip "42.128.166.100"
+                Print IP 42.128.149.197 in v2 profile "results/8.17_profile_results_v2.json":
+                    python3 print_pf.py -ip_v2pf "results/8.17_profile_results_v2.json" -ip "42.128.149.197"
         '''))
     parser.add_argument('-spf', type=str, help='The path of the simplified profile you want to print. For example: \"results/8.17_simplified_profile_results.txt\".')
     parser.add_argument('-nth_spf', type=str, help='The path of the simplified profile you want to print(the nth item). For example: \"results/8.17_simplified_profile_results.txt\".')
@@ -217,6 +241,7 @@ if __name__ == "__main__":
     parser.add_argument('-ip', type=str, help='The ip you want to print. For example: \"65.89.253.157\".')
     parser.add_argument('-pf_v2', type=str, help='The path of the profile you want to print. For example: \"results/8.17_profile_results_v2.json\".')
     parser.add_argument('-dict', type=str, help='The path of the dictionary you want to print. For example: \"results/8.17_profile_results_v2.txt\".')
+    parser.add_argument('-ip_v2pf', type=str, help='The path of the v2 profile you want to print(the nth item). For example: \"results/8.17_profile_results_v2.json\".')
     args = parser.parse_args()
 
     if args.pf:
@@ -235,3 +260,5 @@ if __name__ == "__main__":
         print_n_profiles_v2(args.pf_v2, args.n)
     elif args.dict:
         print_specific_item_in_dict(args.dict, args.ip)
+    elif args.ip_v2pf:
+        print_ip_profiles_v2(args.ip_v2pf,args.ip)
