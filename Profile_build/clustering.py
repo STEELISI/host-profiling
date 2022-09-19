@@ -34,7 +34,7 @@ def plot_dendrogram(model, **kwargs):
     ).astype(float)
 
     # Plot the corresponding dendrogram
-    dendrogram(linkage_matrix, **kwargs)
+    dendrogram(linkage_matrix, orientation="right", **kwargs)
 
 def select_n_sp_randomly(n, from_file, to_file):
     dirname = os.path.dirname(__file__)
@@ -153,7 +153,7 @@ def clustering(ip_file, spf_file):
     print("Clustering done!")
     print(model)
 
-    dump(model, 'filename.joblib') 
+    dump(model, 'restricted.joblib') 
 
     plt.title("Hierarchical Clustering Dendrogram")
     # plot the top three levels of the dendrogram
@@ -170,4 +170,4 @@ if __name__ == "__main__":
     # select_n_ip_randomly(200,"8.17_restricted_ip.txt","200_8.17_restricted_ip.txt")
 
     # clustering_seaborn("sampled_100_simplified_profile.txt")
-    clustering("2000_8.17_unrestricted_ip.txt", "results/8.17_simplified_profile_results.txt")
+    clustering("2000_8.17_restricted_ip.txt", "results/8.17_simplified_profile_results.txt")
