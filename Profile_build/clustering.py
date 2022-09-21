@@ -141,9 +141,7 @@ def clustering(ip_file, spf_file):
     print(len(input_data))
 
     print("Preparing the dataset!")
-    dataset = pd.DataFrame.from_dict({i: input_data[i] 
-                           for i in input_data.keys() 
-                           }, orient='index')
+    dataset = pd.DataFrame.from_dict({i: input_data[i] for i in input_data.keys()}, orient='index')
     dataset = dataset.fillna(0)
 
 
