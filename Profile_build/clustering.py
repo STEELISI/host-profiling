@@ -11,11 +11,12 @@ import pickle
 from sklearn.cluster import AgglomerativeClustering
 from matplotlib import pyplot as plt
 from scipy.cluster.hierarchy import dendrogram
+import scipy.cluster.hierarchy as shc
 import numpy as np
 from joblib import dump, load
 import sys
 
-def plot_dendrogram(dataset, model, **kwargs):
+def plot_model_dendrogram(dataset, model, **kwargs):
     # Create linkage matrix and then plot the dendrogram
 
     # create the counts of samples under each node
@@ -168,17 +169,26 @@ def clustering(ip_file, spf_file, model_file_name):
 
     dump(model, model_file_name) 
 
-    # draw the figure 
-    fig, ax = plt.subplots(figsize=(14, 180))
-    plt.title("Hierarchical Clustering Dendrogram")
-    # plot the top three levels of the dendrogram
-    plot_dendrogram(dataset, model, truncate_mode="level", p=3000)
-    plt.ylabel("IP addresses of nodes.")
-    plt.tight_layout()
-    # plt.show()
+    # print(dataset.iloc[1361])
 
-    fig_res_filename = os.path.join(dirname, 'clustering_results/restricted_cosine.pdf')
+    fig, ax = plt.subplots(figsize=(14, 180))
+    plt.title("Dendrograms")  
+    dend = shc.dendrogram(shc.linkage(dataset, method='ward', metric='euclidean'), labels = dataset.index, orientation="right")
+    plt.tight_layout()
+    fig_res_filename = os.path.join(dirname, 'clustering_results/shc_unrestricted_ward_euclidean.pdf')
     plt.savefig(fig_res_filename)
+
+    # # draw the figure 
+    # fig, ax = plt.subplots(figsize=(14, 180))
+    # plt.title("Hierarchical Clustering Dendrogram")
+    # # plot the top three levels of the dendrogram
+    # plot_model_dendrogram(dataset, model, truncate_mode="level", p=3000)
+    # plt.ylabel("IP addresses of nodes.")
+    # plt.tight_layout()
+    # # plt.show()
+
+    # fig_res_filename = os.path.join(dirname, 'clustering_results/restricted_cosine.pdf')
+    # plt.savefig(fig_res_filename)
 
 
 
@@ -189,4 +199,4 @@ if __name__ == "__main__":
     # select_n_ip_randomly(200,"8.17_restricted_ip.txt","200_8.17_restricted_ip.txt")
 
     # clustering_seaborn("sampled_100_simplified_profile.txt")
-    clustering("2000_8.17_restricted_ip.txt", "results/8.17_simplified_profile_results.txt", "restricted.joblib")
+    clustering("2000_8.17_unrestricted_ip.txt", "results/8.17_simplified_profile_results.txt", "unrestricted.joblib")
