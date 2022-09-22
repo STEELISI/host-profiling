@@ -14,7 +14,7 @@ from scipy.cluster.hierarchy import dendrogram
 import numpy as np
 from joblib import dump, load
 
-def plot_dendrogram(model, **kwargs):
+def plot_dendrogram(dataset, model, **kwargs):
     # Create linkage matrix and then plot the dendrogram
 
     # create the counts of samples under each node
@@ -32,6 +32,13 @@ def plot_dendrogram(model, **kwargs):
     linkage_matrix = np.column_stack(
         [model.children_, model.distances_, counts]
     ).astype(float)
+
+    labels = model.labels_
+    # print(max(labels),min(labels))
+    print("Labels: " + str(labels))
+    print("Number of features: "+str(model.n_features_in_))
+    print("Number of leaves: "+str(model.n_leaves_))
+    
 
     # Plot the corresponding dendrogram
     dendrogram(linkage_matrix, orientation="right", **kwargs)
@@ -138,11 +145,13 @@ def clustering(ip_file, spf_file, model_file_name):
         for i, (k, v) in enumerate(temp_dict.items()):
             input_data[ip][k] = v[1]
     
-    print(len(input_data))
+    print("Number of data points in the dataset: "+str(len(input_data)))
 
     print("Preparing the dataset!")
     dataset = pd.DataFrame.from_dict({i: input_data[i] for i in input_data.keys()}, orient='index')
     dataset = dataset.fillna(0)
+    # print(dataset)
+    print("Dataset done!")
 
 
     model = AgglomerativeClustering(distance_threshold=0, n_clusters=None, affinity = "euclidean")
@@ -157,7 +166,7 @@ def clustering(ip_file, spf_file, model_file_name):
     fig, ax = plt.subplots(figsize=(10, 150))
     plt.title("Hierarchical Clustering Dendrogram")
     # plot the top three levels of the dendrogram
-    plot_dendrogram(model, truncate_mode="level", p=2000)
+    plot_dendrogram(dataset, model, truncate_mode="level", p=2000)
     plt.ylabel("Number of points in node (or index of point if no parenthesis).")
     plt.tight_layout()
     plt.show()
