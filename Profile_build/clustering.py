@@ -13,11 +13,14 @@ from matplotlib import pyplot as plt
 from scipy.cluster.hierarchy import dendrogram
 import numpy as np
 from joblib import dump, load
+import sys
 
 def plot_dendrogram(dataset, model, **kwargs):
     # Create linkage matrix and then plot the dendrogram
 
     # create the counts of samples under each node
+    # sys.setrecursionlimit(1500)
+
     counts = np.zeros(model.children_.shape[0])
     n_samples = len(model.labels_)
     for i, merge in enumerate(model.children_):
@@ -34,14 +37,17 @@ def plot_dendrogram(dataset, model, **kwargs):
     ).astype(float)
 
     labels = model.labels_
+    raw_labels = dataset.index
+    label_list = []
+    for i in labels:
+        label_list.append(raw_labels[i])
     # print(max(labels),min(labels))
     print("Labels: " + str(labels))
     print("Number of features: "+str(model.n_features_in_))
     print("Number of leaves: "+str(model.n_leaves_))
-    
 
     # Plot the corresponding dendrogram
-    dendrogram(linkage_matrix, orientation="right", **kwargs)
+    dendrogram(linkage_matrix, labels = label_list, orientation="right", **kwargs)
 
 def select_n_sp_randomly(n, from_file, to_file):
     dirname = os.path.dirname(__file__)
@@ -150,11 +156,11 @@ def clustering(ip_file, spf_file, model_file_name):
     print("Preparing the dataset!")
     dataset = pd.DataFrame.from_dict({i: input_data[i] for i in input_data.keys()}, orient='index')
     dataset = dataset.fillna(0)
-    # print(dataset)
+    print(dataset)
     print("Dataset done!")
 
 
-    model = AgglomerativeClustering(distance_threshold=0, n_clusters=None, affinity = "euclidean")
+    model = AgglomerativeClustering(distance_threshold=0, compute_full_tree=True, compute_distances=True, n_clusters=None, linkage = "complete", affinity = "cosine")
     print("Start clustering!")
     model.fit(dataset)
     print("Clustering done!")
@@ -163,13 +169,16 @@ def clustering(ip_file, spf_file, model_file_name):
     dump(model, model_file_name) 
 
     # draw the figure 
-    fig, ax = plt.subplots(figsize=(10, 150))
+    fig, ax = plt.subplots(figsize=(14, 180))
     plt.title("Hierarchical Clustering Dendrogram")
     # plot the top three levels of the dendrogram
-    plot_dendrogram(dataset, model, truncate_mode="level", p=2000)
-    plt.ylabel("Number of points in node (or index of point if no parenthesis).")
+    plot_dendrogram(dataset, model, truncate_mode="level", p=3000)
+    plt.ylabel("IP addresses of nodes.")
     plt.tight_layout()
-    plt.show()
+    # plt.show()
+
+    fig_res_filename = os.path.join(dirname, 'clustering_results/restricted_cosine.pdf')
+    plt.savefig(fig_res_filename)
 
 
 
