@@ -116,7 +116,7 @@ def clustering_seaborn(file):
 
     plt.savefig('hierarchical_clustered_heatmap_with_Seaborn_clustermap_python_1st_try.pdf')
 
-def clustering(ip_file, spf_file):
+def clustering(ip_file, spf_file, model_file_name):
     print("Reading data from files......")
     dirname = os.path.dirname(__file__)
     ip_filename = os.path.join(dirname, ip_file)
@@ -151,12 +151,15 @@ def clustering(ip_file, spf_file):
     print("Clustering done!")
     print(model)
 
-    dump(model, 'restricted.joblib') 
+    dump(model, model_file_name) 
 
+    # draw the figure 
+    fig, ax = plt.subplots(figsize=(10, 150))
     plt.title("Hierarchical Clustering Dendrogram")
     # plot the top three levels of the dendrogram
-    plot_dendrogram(model, truncate_mode="level", p=1000)
-    plt.xlabel("Number of points in node (or index of point if no parenthesis).")
+    plot_dendrogram(model, truncate_mode="level", p=2000)
+    plt.ylabel("Number of points in node (or index of point if no parenthesis).")
+    plt.tight_layout()
     plt.show()
 
 
@@ -168,4 +171,4 @@ if __name__ == "__main__":
     # select_n_ip_randomly(200,"8.17_restricted_ip.txt","200_8.17_restricted_ip.txt")
 
     # clustering_seaborn("sampled_100_simplified_profile.txt")
-    clustering("2000_8.17_restricted_ip.txt", "results/8.17_simplified_profile_results.txt")
+    clustering("2000_8.17_restricted_ip.txt", "results/8.17_simplified_profile_results.txt", "restricted.joblib")
