@@ -221,4 +221,4 @@ def simplified_profile_generation(number_of_items_in_topic , file1, file2):
 
 
 if __name__ == "__main__":
-    simplified_profile_generation(5 , "results/8.17_profile_results.txt", "results/test.txt")
+    simplified_profile_generation(5 , "results/8.18_profile_results.txt", "results/8.18_simplified_profile_results.txt")

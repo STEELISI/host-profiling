@@ -33,20 +33,14 @@ def print_ip_profiles_v2(file,ip):
     filename = os.path.join(dirname, file)
     pf_dict = ut.dict_read_from_file(filename)
 
-    item = pf_dict[ip]
+    print(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> " + ip + " <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<")
+    for i, (k, v) in enumerate(pf_dict[ip][0].items()):
+        print(k + ": " + str(v))
+    print("========== " + "End" " ======================================================================")
+    print()
+    print()
 
-    for i in range(num):
-        dict_key = next(it)
-        print(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> " + item + " <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<")
-        print("========== " + "Traffic" " ==================================================================")
-        for i, (k, v) in enumerate(item.items()):
-            print(k + ": " + str(v))
-        print("========== " + "restricted or unrestricted" " ===============================================")
-        for i, (k, v) in enumerate(item.items()):
-            print(k + ": " + str(v[0]))
-        print("========== " + "End" " ======================================================================")
-        print()
-        print()
+
 
 def print_ip_profile(file,ip):
     # print the profile of IP from dictionary

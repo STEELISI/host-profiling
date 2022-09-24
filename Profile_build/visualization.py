@@ -126,4 +126,4 @@ if __name__ == "__main__":
 
     # visual_simplified_profile("results/8.17_simplified_profile_results.txt", "68.158.58.84")
     # visual_simplified_profile("results/8.17_simplified_profile_results.txt", "14.181.124.20")
-    visual_simplified_profile("results/8.17_simplified_profile_results.txt", "15.82.185.131")
+    visual_simplified_profile("results/8.18_simplified_profile_results.txt", "14.14.129.177")
