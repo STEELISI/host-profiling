@@ -134,7 +134,14 @@ def simplified_profile_generation_v2(number_of_items_in_topic , file1, file2):
         # the item3 of the simplified profile
         outbound_usage = {}
         inbound_usage = {}
-        all_port_usage = {}
+
+        for j, (traffic_k, traffic_v) in enumerate(traffic_dict.items()):
+            # enumerate all the outbound port items
+            index_list = traffic_k.split("|")
+            time_index = index_list[0]
+            direction = index_list[1]
+            port = index_list[2]
+
 
 
 def simplified_profile_generation(number_of_items_in_topic , file1, file2):
