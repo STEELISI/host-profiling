@@ -83,6 +83,42 @@ def extract_service_ports(file1, file2):
     
     ut.dict_write_to_file(clustering_dict, file2)
 
+def simplified_profile_generation_v2(number_of_items_in_topic , file1, file2):
+    # read the profile and build a dictionary according to the most used service ports 
+    #
+    # num indicates the top num service ports
+    # file1 is the profile
+    # file2 is the file to save the results
+    #
+    # Layout of the simplified profile:
+    # {"IP 1": [item1, item2, item3], "IP 2": [item1, item2, item3], ......}
+    #           item1: the topic of this IP address,
+    #                  a sorted list with up to 10 items [["Inbound|80|http", 0.5, 0.5], ["Inbound|---|NON_SERVICE_PORT", 0.3, 0.25], ......]
+    #                                                                          ^    ^
+    #                                                                          |    |
+    #                                                          proportion of pkts   proportion of bytes
+    #           item2: the traffic throughput of this IP address, a list
+    #                   [item1, item2, item3, item4]
+    #                   item1: outbound pkts total, item2: outbound bytes total
+    #                   item3: inbound pkts total, item4: inbound bytes total
+    #           item3: the detailed port usage information, a dictionary
+    #                   {"Inbound|PORT_NUM|explaination_of_the_port":[item1, item2], "Outbound|---|NON_SERVICE_PORT":[item1, item2], ......}
+    #                                                                   ^      ^
+    #                                                                   |      |
+    #                                                   proportion of pkts    proportion of bytes
+    dirname = os.path.dirname(__file__)
+    file1 = os.path.join(dirname, file1)
+    file2 = os.path.join(dirname, file2)
+
+    service_ports_dict = ut.service_port_to_dict("service-names-port-numbers.csv")
+    pf_dict = ut.dict_read_from_file(file1)
+    simplified_PF_dict = {}
+
+    print("Generating simplified profiles (v2) ...")
+    # enumerate the profile dictionary 
+    for i, (k, v) in enumerate(pf_dict.items()):
+        pass
+
 
 def simplified_profile_generation(number_of_items_in_topic , file1, file2):
     # read the profile and build a dictionary according to the most used service ports 

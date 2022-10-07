@@ -405,6 +405,12 @@ if __name__ == "__main__":
     # sample command: 
     # python3 profile_build.py -p "/Volumes/Laiky/FRGP_Netflow_ISI/validate/17" -t "20200817-0600" -r "profile_results.txt"
     # python3 profile_build.py -p "/Volumes/Laiky/FRGP_Netflow_ISI/validate/18" -t "20200818-0600" -r "8.18_profile_results.txt"
+    # python3 profile_build.py -p "/Volumes/Laiky/FRGP_Netflow_ISI/validate/19" -t "20200819-0600" -r "results/8.19_profile_results.json"
+    # python3 profile_build.py -p "/Volumes/Laiky/FRGP_Netflow_ISI/validate/20" -t "20200820-0600" -r "results/8.20_profile_results.json" 
+    # python3 profile_build.py -p "/Volumes/Laiky/FRGP_Netflow_ISI/validate/21" -t "20200821-0600" -r "results/8.21_profile_results.json" 
+
+    # python3 profile_build.py -p "/Volumes/Laiky/FRGP_Netflow_ISI/validate/22" -t "20200822-0600" -r "results/8.22_profile_results.json"
+    # python3 profile_build.py -p "/Volumes/Laiky/FRGP_Netflow_ISI/validate/23" -t "20200823-0600" -r "results/8.23_profile_results.json" 
 
     # process_single_command()
     # process_multiple_commands()
