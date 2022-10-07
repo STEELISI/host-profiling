@@ -117,7 +117,24 @@ def simplified_profile_generation_v2(number_of_items_in_topic , file1, file2):
     print("Generating simplified profiles (v2) ...")
     # enumerate the profile dictionary 
     for i, (k, v) in enumerate(pf_dict.items()):
-        pass
+        # enumerate all the IP addresses
+        # k is the ip address 
+        # v is [dict(), dict()]
+        # # The first dict is for traffic (v[0])
+        # # The second dict is topology
+        temp_res = [[],[],dict(),dict()]
+        traffic_dict = v[0]
+
+        # the item1 of the simplified profile
+        topic = []
+
+        # the item2 of the simplified profile
+        traffic_throughput = [0, 0, 0, 0,]
+
+        # the item3 of the simplified profile
+        outbound_usage = {}
+        inbound_usage = {}
+        all_port_usage = {}
 
 
 def simplified_profile_generation(number_of_items_in_topic , file1, file2):
