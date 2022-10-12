@@ -142,6 +142,32 @@ def simplified_profile_generation_v2(number_of_items_in_topic , file1, file2):
             direction = index_list[1]
             port = index_list[2]
 
+            # generate the key value for port information
+            if "---" in port:
+                # it is a non-service port 
+                port_key = direction + "|---|NON_SERVICE_PORT"
+            else:
+                port_key = direction +  "|" + port + "|" + service_ports_dict[port]
+
+            if "out" in direction:
+                # outbound traffic 
+                pass
+            elif "in" in direction:
+                # inbound traffic 
+                pass
+            else:
+                print("Unexpected Value!")
+                print(traffic_k)   
+            
+            if port_key in inbound_usage:
+                value_to_be_updated = [v_in[0]+inbound_usage[port_key][0], v_in[1]+inbound_usage[port_key][1]]
+                inbound_usage[port_key] = value_to_be_updated
+            else:
+                inbound_usage[port_key] = v_in
+            
+            # update the traffic throughput
+            traffic_throughput[2] = traffic_throughput[2] + v_in[0]
+            traffic_throughput[3] = traffic_throughput[3] + v_in[1]
 
 
 def simplified_profile_generation(number_of_items_in_topic , file1, file2):
