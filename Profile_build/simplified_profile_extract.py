@@ -151,23 +151,61 @@ def simplified_profile_generation_v2(number_of_items_in_topic , file1, file2):
 
             if "out" in direction:
                 # outbound traffic 
-                pass
+                if port_key in outbound_usage:
+                    value_to_be_updated = [traffic_v[0]+outbound_usage[port_key][0], traffic_v[1]+outbound_usage[port_key][1]]
+                    outbound_usage[port_key] = value_to_be_updated
+                else:
+                    outbound_usage[port_key] = traffic_v
+                
+                # update the traffic throughput
+                traffic_throughput[0] = traffic_throughput[0] + traffic_v[0]
+                traffic_throughput[1] = traffic_throughput[1] + traffic_v[1]
+
             elif "in" in direction:
                 # inbound traffic 
-                pass
+                if port_key in inbound_usage:
+                    value_to_be_updated = [traffic_v[0]+inbound_usage[port_key][0], traffic_v[1]+inbound_usage[port_key][1]]
+                    inbound_usage[port_key] = value_to_be_updated
+                else:
+                    inbound_usage[port_key] = traffic_v
+
+                # update the traffic throughput
+                traffic_throughput[2] = traffic_throughput[2] + traffic_v[0]
+                traffic_throughput[3] = traffic_throughput[3] + traffic_v[1]
+
             else:
                 print("Unexpected Value!")
-                print(traffic_k)   
-            
-            if port_key in inbound_usage:
-                value_to_be_updated = [v_in[0]+inbound_usage[port_key][0], v_in[1]+inbound_usage[port_key][1]]
-                inbound_usage[port_key] = value_to_be_updated
-            else:
-                inbound_usage[port_key] = v_in
-            
-            # update the traffic throughput
-            traffic_throughput[2] = traffic_throughput[2] + v_in[0]
-            traffic_throughput[3] = traffic_throughput[3] + v_in[1]
+                print(traffic_k, traffic_v)
+        
+        total_pkts = traffic_throughput[0] + traffic_throughput[2]
+        total_bytes = traffic_throughput[1] + traffic_throughput[3]
+
+        # update the outbound dict to change numbers to proportions
+        for num, (p_key, p_out) in enumerate(outbound_usage.items()):
+            outbound_usage[p_key][0] =  outbound_usage[p_key][0]/total_pkts
+            outbound_usage[p_key][1] =  outbound_usage[p_key][1]/total_bytes
+        
+        # update the inbound dict to change numbers to proportions
+        for num, (p_key, p_in) in enumerate(inbound_usage.items()):
+            inbound_usage[p_key][0] =  inbound_usage[p_key][0]/total_pkts
+            inbound_usage[p_key][1] =  inbound_usage[p_key][1]/total_bytes
+        
+        # generate item 1, the topic of this IP address
+        outbound_topic = sorted(outbound_usage.items(), key=lambda item: item[1][1], reverse=True)[:number_of_items_in_topic]
+        inbound_topic = sorted(inbound_usage.items(), key=lambda item: item[1][1], reverse=True)[:number_of_items_in_topic]
+        topic = outbound_topic + inbound_topic
+        # sort the topic 
+        def sort_key(e):
+            return e[1][1]
+        topic.sort(reverse = True, key = sort_key)
+
+        # merge the inbound and outbound dicts to a single dict 
+        total_usage = ut.merge_dict(outbound_usage,inbound_usage)
+
+        # add this completed simplified profile to the result 
+        simplified_PF_dict[k] = [topic, traffic_throughput, total_usage]
+
+    ut.dict_write_to_file(simplified_PF_dict, file2)
 
 
 def simplified_profile_generation(number_of_items_in_topic , file1, file2):
