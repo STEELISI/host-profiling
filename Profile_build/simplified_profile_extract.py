@@ -1,8 +1,8 @@
 # Yebo Feng 
 import profile_build as pb
 import utilities as ut
-from itertools import islice
 import os
+import argparse
 
 def profile_dict_to_list_v1(profile_dict):
     #########################################
@@ -345,4 +345,14 @@ def simplified_profile_generation(number_of_items_in_topic , file1, file2):
 
 
 if __name__ == "__main__":
-    simplified_profile_generation(5 , "results/8.18_profile_results.txt", "results/8.18_simplified_profile_results.txt")
+    parser = argparse.ArgumentParser()
+    parser.add_argument('-v1', type=str, help='The path of profile file to generate v1 simplified profile. For example: \"results/8.18_profile_results.txt\".')
+    parser.add_argument('-v2', type=str, help='The path of profile file to generate v2 simplified profile. For example: \"results/8.18_profile_results.txt\".')
+    parser.add_argument('-num', type=int, help='Number of items in the topic.')
+    parser.add_argument('-res', type=str, help='The path to store the results.')
+    args = parser.parse_args()
+
+    if args.v1:
+        simplified_profile_generation(args.num , args.v1, args.res)
+    elif args.v2:
+        simplified_profile_generation_v2(args.num , args.v2, args.res)
