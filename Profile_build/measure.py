@@ -317,6 +317,22 @@ def measure_port_usage(path_of_files):
     measure_time_taken = measure_end_time - measure_start_time
     print("Total time taken: " + str(measure_time_taken) + "s.")
 
+def measure_continuous_ip(file1, file2):
+    print("Loading all the files......")
+    dirname = os.path.dirname(__file__)
+    ip_file_1 = os.path.join(dirname, file1)
+    ip_file_2 = os.path.join(dirname, file2)
+
+    ip_list_1 = ut.read_list_from_file_linebyline(ip_file_1)
+    ip_list_2 = ut.read_list_from_file_linebyline(ip_file_2)
+
+    def intersection(lst1, lst2):
+        lst3 = [value for value in lst1 if value in lst2]
+        return lst3
+
+    print("The size of the first list: " + str(len(ip_list_1)))
+    print("The size of the second list: " + str(len(ip_list_2)))
+    print("Number of common ips: " + str(len(intersection(ip_list_1, ip_list_2))))
 
 def measure_multiple():
     global service_ports_dict
@@ -390,6 +406,7 @@ def number_of_items_in_dict(filename):
 if __name__ == "__main__":
     # python3 measure.py -mpufa "/Volumes/Laiky/FRGP_Netflow_ISI/validate/17"
     # python3 measure.py -port_usage_for_each_endpoint "/Volumes/Laiky/FRGP_Netflow_ISI/validate/17" -save_to "8.17_port_usage_for_each_endpoint.json"
+    # python3 measure.py -cont1 8.17_unrestricted_v2.txt -cont2 8.18_unrestricted_v2.txt
 
     # measure_multiple()
     # number_of_items_in_dict("profile_results.txt")
@@ -398,9 +415,13 @@ if __name__ == "__main__":
     parser.add_argument('-mpufa', type=str, help='Count the port usage for all flows in the Netflow (not for each endpoint separately). Enter the path of Netflow, For example: \"/Volumes/Laiky/FRGP_Netflow_ISI/validate/17\".')
     parser.add_argument('-port_usage_for_each_endpoint', type=str, help="Count the port usage for each endpoint separately. Enter the path of Netflow, For example: \"/Volumes/Laiky/FRGP_Netflow_ISI/validate/17\".")
     parser.add_argument('-save_to', type=str, help="Save the result to. For example: \"/8.17_port_usage_for_each_endpoint.json\".")
+    parser.add_argument('-cont1', type=str, help="The first file for IP list (for measuring common IPs). For example: \"/8.17_restricted_ip.txt\".")
+    parser.add_argument('-cont2', type=str, help="The second file for IP list (for measuring common IPs). For example: \"/8.18_restricted_ip.txt\".")
     args = parser.parse_args()
 
     if args.mpufa:
         measure_port_usage(args.mpufa)
     elif args.port_usage_for_each_endpoint and args.save_to:
         measure_port_usage_for_each_ip(args.port_usage_for_each_endpoint, args.save_to)
+    elif args.cont1:
+        measure_continuous_ip(args.cont1, args.cont2)

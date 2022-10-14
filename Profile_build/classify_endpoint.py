@@ -122,6 +122,7 @@ def separate_ip_v2(profile_v2_file, simplified_profile_file):
 
 if __name__ == "__main__":
     # python3 classify_endpoint.py -p_v1 "results/8.17_profile_results.txt" -p_v2 "results/8.17_profile_results_v2.json" -p_sf "results/8.17_simplified_profile_results.txt"
+    # python3 classify_endpoint.py -p_v2 "results/8.17_profile_results_v2.json" -p_sf "results/8.17_simplified_profile_results_v2.json"
 
     parser = argparse.ArgumentParser()
     parser.add_argument('-p_v1', type=str, help='The path of profile (v1). For example: \"results/8.17_profile_results.txt\".')
