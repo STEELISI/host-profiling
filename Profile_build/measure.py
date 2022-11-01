@@ -252,6 +252,84 @@ def measure_port_usage_for_each_ip(path_of_files, save_to_file):
     measure_time_taken = measure_end_time - measure_start_time
     print("Total time taken: " + str(measure_time_taken) + "s.")
 
+def measure_port_usage_for_each_ip_multiple(path_of_folder, start_date, end_date, save_to_file):
+    # Count the port usage for each endpoint separately. 
+
+    # read service ports 
+    global service_ports_dict
+    service_ports_dict = ut.service_port_to_dict("service-names-port-numbers.csv")
+    # initialize and read the prefix
+    global nw_tree
+    nw_tree = rn.read_build_tree()
+    print("Successfully read the prefixes!")
+
+    # initialize the dict to store the results (port usage for each endpoint)
+    global port_usage_dict_for_IP
+    port_usage_dict_for_IP = {}
+    # {IP:[{},{}]}
+    # The first sub dict {internal_port:[flow_num, pkts, bytes]}
+    # The second sub dict {remote_port:[flow_num, pkts, bytes]}
+
+    folders = ut.get_folders(path_of_folder)
+    target_folders = []
+    for i in folders:
+        if int(i.split("/")[-1]) >= start_date and int(i.split("/")[-1]) <= end_date:
+            target_folders.append(i)
+
+    # read command 
+    try:
+        dirname = os.path.dirname(__file__)
+        command_filename = os.path.join(dirname, "NFDUMP_command/read_single.txt")
+        command = ut.read_command(command_filename)
+        # command = ' '.join(command)
+        print("Successfully read the command:")
+        print("\t"+' '.join(command))
+    except Exception as e:
+        print("An exception occurred when reading the command!")
+        print(e)
+    
+    files = []
+    for folder in target_folders:
+        files = files + ut.get_files(folder)
+
+    # run the command and read the Netflow data
+    measure_start_time = time.time()
+
+    try:
+        for file in files:
+            runtime_start = time.time()
+            print("Inputting the 5 mins of NetFlow data now...")
+            print(file)
+            command[2] = file
+
+            # run with opt 2 as it is complicated output 
+            NF_input = pb.run_bash(' '.join(command),2)
+            NF_input = NF_input.strip().split("\n")
+            print("NetFlow input successfully!")
+
+            # build profiles from the netflow data 
+            port_usage_count_for_each_IP(NF_input)
+            runtime_end = time.time()
+            runtime = float(runtime_end - runtime_start)
+
+            print("~"*10 + " Port usage counted for " + file + " " + "~"*10)
+            print("~"*10 + " Toke " + str(runtime) +"s " + "~"*10)
+    except Exception as e:
+        print("An exception occurred when building profiles from the NetFlow data!")
+        print(e)
+
+    # save file
+    the_dirname = os.path.dirname(__file__)
+    save_to_filename = os.path.join(the_dirname, save_to_file)
+    ut.dict_write_to_file(port_usage_dict_for_IP, save_to_filename)
+    
+    measure_end_time = time.time()
+    measure_time_taken = measure_end_time - measure_start_time
+    print("Total time taken: " + str(measure_time_taken) + "s.")
+
+
+
+
 def measure_port_usage(path_of_files):
     # Count the port usage for all flows in the Netflow (not for each endpoint separately). 
 
@@ -407,6 +485,7 @@ if __name__ == "__main__":
     # python3 measure.py -mpufa "/Volumes/Laiky/FRGP_Netflow_ISI/validate/17"
     # python3 measure.py -port_usage_for_each_endpoint "/Volumes/Laiky/FRGP_Netflow_ISI/validate/17" -save_to "8.17_port_usage_for_each_endpoint.json"
     # python3 measure.py -cont1 8.17_unrestricted_v2.txt -cont2 8.18_unrestricted_v2.txt
+    # python3 measure.py -port_usage_for_each_endpoint_multiple "/Volumes/Laiky/FRGP_Netflow_ISI/validate/" -start 17 -end 23 -save_to "8.17-8.23_port_usage_for_each_endpoint_multiple.json"
 
     # measure_multiple()
     # number_of_items_in_dict("profile_results.txt")
@@ -417,6 +496,9 @@ if __name__ == "__main__":
     parser.add_argument('-save_to', type=str, help="Save the result to. For example: \"/8.17_port_usage_for_each_endpoint.json\".")
     parser.add_argument('-cont1', type=str, help="The first file for IP list (for measuring common IPs). For example: \"/8.17_restricted_ip.txt\".")
     parser.add_argument('-cont2', type=str, help="The second file for IP list (for measuring common IPs). For example: \"/8.18_restricted_ip.txt\".")
+    parser.add_argument('-port_usage_for_each_endpoint_multiple', type=str, help="Count the port usage for each endpoint separately for multiple days. Enter the path of root, For example: \"/Volumes/Laiky/FRGP_Netflow_ISI/validate/\".")
+    parser.add_argument('-start', type=int, help="Start date. For example: 17.")
+    parser.add_argument('-end', type=int, help="End date. For example: 23.")
     args = parser.parse_args()
 
     if args.mpufa:
@@ -425,3 +507,5 @@ if __name__ == "__main__":
         measure_port_usage_for_each_ip(args.port_usage_for_each_endpoint, args.save_to)
     elif args.cont1:
         measure_continuous_ip(args.cont1, args.cont2)
+    elif args.port_usage_for_each_endpoint_multiple and args.save_to and args.start and args.end:
+        measure_port_usage_for_each_ip_multiple(args.port_usage_for_each_endpoint_multiple, args.start, args.end, args.save_to)

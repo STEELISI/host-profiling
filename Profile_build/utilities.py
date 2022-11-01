@@ -6,6 +6,11 @@ import os
 import json
 import time
 
+def get_folders(folder):
+    # get all the folders on the first layer of a path
+    subfolders = [ f.path for f in os.scandir(folder) if f.is_dir() ]
+    return subfolders
+
 def get_files(path):
     # path = '/data/2019'
     files = []

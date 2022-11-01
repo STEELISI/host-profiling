@@ -74,6 +74,15 @@ def file_path(f):
     res_filename = os.path.join(res_dirname, f)
     print(res_filename)
 
+def get_folders(folder):
+    subfolders = [ f.path for f in os.scandir(folder) if f.is_dir() ]
+    print(subfolders)
+    target_folders = []
+    for i in subfolders:
+        if int(i.split("/")[-1]) >= 21 and int(i.split("/")[-1]) <= 27:
+            target_folders.append(i)
+    print(target_folders)
+
 if __name__ == "__main__":
     print("Testing ...")
     # test_time_mapping()
@@ -82,4 +91,5 @@ if __name__ == "__main__":
     # test_dict_read("results.txt")
     # test_port_mapping_v1()
     # test_relative_path()
-    file_path("../")
+    # file_path("../")
+    get_folders("/Volumes/Laiky/FRGP_Netflow_ISI/validate/")
