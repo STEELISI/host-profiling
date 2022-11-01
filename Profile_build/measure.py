@@ -486,6 +486,7 @@ if __name__ == "__main__":
     # python3 measure.py -port_usage_for_each_endpoint "/Volumes/Laiky/FRGP_Netflow_ISI/validate/17" -save_to "8.17_port_usage_for_each_endpoint.json"
     # python3 measure.py -cont1 8.17_unrestricted_v2.txt -cont2 8.18_unrestricted_v2.txt
     # python3 measure.py -port_usage_for_each_endpoint_multiple "/Volumes/Laiky/FRGP_Netflow_ISI/validate/" -start 17 -end 23 -save_to "8.17-8.23_port_usage_for_each_endpoint_multiple.json"
+    # python3 measure.py -port_usage_for_each_endpoint_multiple "/Volumes/Laiky/FRGP_Netflow_ISI/validate/" -start 24 -end 30 -save_to "8.24-8.30_port_usage_for_each_endpoint_multiple.json"
 
     # measure_multiple()
     # number_of_items_in_dict("profile_results.txt")
