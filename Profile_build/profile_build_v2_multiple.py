@@ -58,6 +58,10 @@ def profile_build(flow_list):
         # print(ip1, ip1_port, ip2, ip2_port)
         start_time = items[0].strip()
         end_time = items[1].strip()
+        print("=====")
+        print(start_time)
+        print(end_time)
+        print("=====")
         duration = float(items[2].strip())
 
         # protocol and tcp flag 
@@ -431,9 +435,21 @@ def process_multiple_commands(netflow_path, start, end, profile_date_input, port
     ####################
     # UPDATE THIS!!!
     ####################
-    # profile_date = "20200817-0600"
+    ## profile_date = "20200817-0600"
+    # profile_date = profile_date_input
+    # profile_date_down_ts, profile_date_up_ts = ut.time_round_day_datetime(profile_date)
+
     profile_date = profile_date_input
-    profile_date_down_ts, profile_date_up_ts = ut.time_round_day_datetime(profile_date)
+    profile_date_prefix = profile_date[0:6]
+    # print(profile_date_prefix)
+    profile_date_suffix = profile_date[8:13]
+    # print(profile_date_suffix)
+    start_profile_date = profile_date_prefix + str(start) + profile_date_suffix
+    end_profile_date = profile_date_prefix + str(end) + profile_date_suffix
+    profile_date_down_ts, _ = ut.time_round_day_datetime(start_profile_date)
+    _, profile_date_up_ts = ut.time_round_day_datetime(end_profile_date)
+
+    # load the service port list 
     service_ports_dict = ut.service_port_to_dict("service-names-port-numbers.csv")
 
     # initialize the profile dictionary
@@ -482,7 +498,7 @@ def process_multiple_commands(netflow_path, start, end, profile_date_input, port
     try:
         for file in files:
             runtime_start = time.time()
-            print("Inputting the 5 mins of NetFlow data now...")
+            print("Inputting the 5 mins of NetFlow data now ......")
             print(file)
             command[2] = file
 
@@ -514,8 +530,7 @@ def process_multiple_commands(netflow_path, start, end, profile_date_input, port
 
 if __name__ == "__main__":
     # sample command: 
-    # python3 profile_build_v2.py -p "/Volumes/Laiky/FRGP_Netflow_ISI/validate/17" -t "20200817-0600" -port_usage_for_each_endpoint "results/8.17_port_usage_for_each_endpoint.json" -r "results/8.17_profile_results_v2.json"
-    # python3 profile_build_v2.py -p "/Volumes/Laiky/FRGP_Netflow_ISI/validate/18" -t "20200818-0600" -port_usage_for_each_endpoint "results/8.18_port_usage_for_each_endpoint.json" -r "results/8.18_profile_results_v2.json"
+    # python3 profile_build_v2_multiple.py -p "/Volumes/Laiky/FRGP_Netflow_ISI/validate/" -start 17 -end 23 -t "20200817-0600" -port_usage_for_each_endpoint "results/8.17-8.23_port_usage_for_each_endpoint_multiple.json" -r "results/8.17-8.23_profile_results_v2.json"
 
     # process_multiple_commands()
 

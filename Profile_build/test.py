@@ -99,7 +99,14 @@ def test_path(netflow_path, start = 17, end = 23):
     print(files)
 
 def test_time(profile_date, start=17, end=23):
-    profile_date_down_ts, profile_date_up_ts = ut.time_round_day_datetime(profile_date)
+    profile_date_prefix = profile_date[0:6]
+    # print(profile_date_prefix)
+    profile_date_suffix = profile_date[8:13]
+    # print(profile_date_suffix)
+    start_profile_date = profile_date_prefix + str(start) + profile_date_suffix
+    end_profile_date = profile_date_prefix + str(end) + profile_date_suffix
+    profile_date_down_ts, _ = ut.time_round_day_datetime(start_profile_date)
+    _, profile_date_up_ts = ut.time_round_day_datetime(end_profile_date)
     print(profile_date_down_ts, profile_date_up_ts)
 
 if __name__ == "__main__":
