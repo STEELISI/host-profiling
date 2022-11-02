@@ -414,7 +414,7 @@ def run_bash(command,opt):
         p_status = p.wait()
         return output.decode('utf-8').strip()
 
-def process_multiple_commands(netflow_path, profile_date_input, port_usage_for_each_ip_file, save_to_file):
+def process_multiple_commands(netflow_path, start, end, profile_date_input, port_usage_for_each_ip_file, save_to_file):
     # which date the profile is
     global profile_date
     global profile_date_down_ts
@@ -507,13 +507,15 @@ if __name__ == "__main__":
     # process_multiple_commands()
 
     parser = argparse.ArgumentParser()
-    parser.add_argument('-p', type=str, required=True, help='The path of Netflow files. For example: \"/Volumes/Laiky/FRGP_Netflow_ISI/validate/17\".')
+    parser.add_argument('-p', type=str, required=True, help='The path of Netflow files. For example: \"/Volumes/Laiky/FRGP_Netflow_ISI/validate\".')
     parser.add_argument('-t', type=str, required=True, help='The time and timezone difference. For example: \"20200817-0600\".')
     parser.add_argument('-port_usage_for_each_endpoint', type=str, required=True, help='The path of dict with port usage for each endpoint. For example: \"8.17_port_usage_for_each_endpoint.json\".')
     parser.add_argument('-r', type=str, required=True, help='Which file should it save results to. For example: \"profile_results.txt\".')
+    parser.add_argument('-start', type=int, help='Start date. For example 17.')
+    parser.add_argument('-end', type=int, help='End date. For example 23.')
     args = parser.parse_args()
 
     res_dirname = os.path.dirname(__file__)
     res_filename = os.path.join(res_dirname, args.r)
     
-    process_multiple_commands(args.p, args.t, args.port_usage_for_each_endpoint, res_filename)
+    process_multiple_commands(args.p, args.start, args.end, args.t, args.port_usage_for_each_endpoint, res_filename)
