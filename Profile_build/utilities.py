@@ -24,6 +24,18 @@ def get_files(path):
 
     return files
 
+def get_all_files(path):
+    # path = '/data/2019'
+    files = []
+    ## r=root, d=directories, f = files
+    for r, d, f in os.walk(path):
+        for file in f:
+            files.append(os.path.join(r, file))
+    # for f in files:
+    #     print(f)
+
+    return files
+
 def read_list_from_file_linebyline(filename):
     res_list = []
     with open(filename, 'r') as file:

@@ -83,6 +83,14 @@ def get_folders(folder):
             target_folders.append(i)
     print(target_folders)
 
+def tt(path):
+    all_files = ut.get_all_files(path)
+    files = []
+    for i in all_files:
+        if "port_usage_for_each" in i:
+            print(int(i.split('/')[-1].split('_')[0].split('.')[1]))
+            print(i)
+
 if __name__ == "__main__":
     print("Testing ...")
     # test_time_mapping()
@@ -92,4 +100,5 @@ if __name__ == "__main__":
     # test_port_mapping_v1()
     # test_relative_path()
     # file_path("../")
-    get_folders("/Volumes/Laiky/FRGP_Netflow_ISI/validate/")
+    # get_folders("/Volumes/Laiky/FRGP_Netflow_ISI/validate/")
+    tt("/Users/yebof/Documents/host-profiling/Profile_build/results")
