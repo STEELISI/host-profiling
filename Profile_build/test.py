@@ -83,13 +83,24 @@ def get_folders(folder):
             target_folders.append(i)
     print(target_folders)
 
-def tt(path):
-    all_files = ut.get_all_files(path)
+def test_path(netflow_path, start = 17, end = 23):
+    # fetch pathes of all the netflow files 
+    all_folders = ut.get_folders(netflow_path)
+    # fetch all the folders 
+    folders = []
+    for i in all_folders:
+        folder_date = int(i.split('/')[-1])
+        if folder_date >= start and folder_date <= end:
+            folders.append(i)
     files = []
-    for i in all_files:
-        if "port_usage_for_each" in i:
-            print(int(i.split('/')[-1].split('_')[0].split('.')[1]))
-            print(i)
+    # fetch all the files in all the selected folders 
+    for i in folders:
+        files = files + ut.get_files(i)
+    print(files)
+
+def test_time(profile_date, start=17, end=23):
+    profile_date_down_ts, profile_date_up_ts = ut.time_round_day_datetime(profile_date)
+    print(profile_date_down_ts, profile_date_up_ts)
 
 if __name__ == "__main__":
     print("Testing ...")
@@ -101,4 +112,5 @@ if __name__ == "__main__":
     # test_relative_path()
     # file_path("../")
     # get_folders("/Volumes/Laiky/FRGP_Netflow_ISI/validate/")
-    tt("/Users/yebof/Documents/host-profiling/Profile_build/results")
+    # test_path("/Volumes/Laiky/FRGP_Netflow_ISI/validate/")
+    test_time("20200817-0600")

@@ -444,8 +444,21 @@ def process_multiple_commands(netflow_path, start, end, profile_date_input, port
     nw_tree = rn.read_build_tree()
     print("Successfully read the prefixes!")
 
-    # files = ut.get_files('/Volumes/Laiky/FRGP_Netflow_ISI/validate/17')
-    files = ut.get_files(netflow_path)
+    # fetch pathes of all the netflow files 
+    all_folders = ut.get_folders(netflow_path)
+    # fetch all the folders 
+    folders = []
+    for i in all_folders:
+        folder_date = int(i.split('/')[-1])
+        if folder_date >= start and folder_date <= end:
+            folders.append(i)
+    files = []
+    # fetch all the files in all the selected folders 
+    for i in folders:
+        files = files + ut.get_files(i)
+
+    # # files = ut.get_files('/Volumes/Laiky/FRGP_Netflow_ISI/validate/17')
+    # files = ut.get_files(netflow_path)
 
     # read command 
     try:
