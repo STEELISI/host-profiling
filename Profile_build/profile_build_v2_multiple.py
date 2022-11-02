@@ -58,10 +58,12 @@ def profile_build(flow_list):
         # print(ip1, ip1_port, ip2, ip2_port)
         start_time = items[0].strip()
         end_time = items[1].strip()
-        print("=====")
-        print(start_time)
-        print(end_time)
-        print("=====")
+        # print("=====")
+        # print(start_time)
+        # print(end_time)
+        # print("=====")
+        # 2020-08-16 23:04:29.056
+        # 2020-08-16 23:04:29.056
         duration = float(items[2].strip())
 
         # protocol and tcp flag 
@@ -202,7 +204,7 @@ def add_record_to_profile(direction_flag, timestamp, ip, ip_port, another_port, 
     start, end = time_mapping(timestamp)
     # record_key = ut.timestamp_to_datetime(start) + "-" + ut.timestamp_to_datetime(end) + "|" + port_mapping_v1(ip_port)
 
-    time_index = ut.timestamp_to_datetime(start) + "-" + ut.timestamp_to_datetime(end)
+    time_index = ut.timestamp_to_datetime2(start) + "-" + ut.timestamp_to_datetime2(end)
 
     # outbound traffic 
     if direction_flag == 1:

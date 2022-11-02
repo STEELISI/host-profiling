@@ -109,6 +109,9 @@ def test_time(profile_date, start=17, end=23):
     _, profile_date_up_ts = ut.time_round_day_datetime(end_profile_date)
     print(profile_date_down_ts, profile_date_up_ts)
 
+def test_datetime(ts=1597644269.056):
+    print(ut.timestamp_to_datetime2(ts))
+
 if __name__ == "__main__":
     print("Testing ...")
     # test_time_mapping()
@@ -120,4 +123,5 @@ if __name__ == "__main__":
     # file_path("../")
     # get_folders("/Volumes/Laiky/FRGP_Netflow_ISI/validate/")
     # test_path("/Volumes/Laiky/FRGP_Netflow_ISI/validate/")
-    test_time("20200817-0600")
+    # test_time("20200817-0600")
+    test_datetime()

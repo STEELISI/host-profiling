@@ -174,6 +174,19 @@ def timestamp_to_datetime(ts):
     # return datetime_obj
     return str(datetime_obj.strftime("%H:%M"))
 
+def timestamp_to_datetime2(ts):
+    # convert a timestamp to datetime string and further convert it to the time format we need
+    # example: 1597644269.056 => "2020-08-16 23:04:29.056"
+    # => 00:04
+
+    # the Netflow is from FRGP, whose timezone is -6 
+    # please change this accordingly, otherwise the program cannot be correct
+    timezone_offset = timedelta(hours = -6)
+    datetime_obj = datetime.fromtimestamp(ts, tz=timezone(timezone_offset))
+
+    # return datetime_obj
+    return str(datetime_obj.strftime("%m.%d>%H:%M"))
+
 def time_round_day(ts):
     # the Netflow is from FRGP, whose timezone is -6 
     # please change this accordingly, otherwise the program cannot be correct
