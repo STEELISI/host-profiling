@@ -345,6 +345,8 @@ def simplified_profile_generation(number_of_items_in_topic , file1, file2):
 
 
 if __name__ == "__main__":
+    # python3 simplified_profile_extract.py -num 5 -v2 results/8.31_profile_results_v2.json -res results/8.31_simplified_profile_results_v2.json
+    
     parser = argparse.ArgumentParser()
     parser.add_argument('-v1', type=str, help='The path of profile file to generate v1 simplified profile. For example: \"results/8.18_profile_results.txt\".')
     parser.add_argument('-v2', type=str, help='The path of profile file to generate v2 simplified profile. For example: \"results/8.18_profile_results.txt\".')
