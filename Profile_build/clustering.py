@@ -161,7 +161,7 @@ def clustering(ip_file, spf_file, model_file_name):
     print("Dataset done!")
 
 
-    model = AgglomerativeClustering(distance_threshold=0, compute_full_tree=True, compute_distances=True, n_clusters=None, linkage = "complete", affinity = "cosine")
+    model = AgglomerativeClustering(distance_threshold=0, compute_full_tree=True, compute_distances=True, n_clusters=None, linkage = "ward", affinity = "euclidean")
     print("Start clustering!")
     model.fit(dataset)
     print("Clustering done!")

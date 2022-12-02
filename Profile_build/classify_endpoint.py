@@ -115,14 +115,17 @@ def separate_ip_v2(profile_v2_file, simplified_profile_file):
     print("Unrestricted IP number: " + str(len(unrestricted_ip_list)))
     print("Saving all the IPs......")
 
-    ut.save_list_to_file_linebyline(single_directional_ip_list, "8.19_invalid_ip_v2.txt")
-    ut.save_list_to_file_linebyline(restricted_ip_list, "8.19_restricted_v2.txt")
-    ut.save_list_to_file_linebyline(unrestricted_ip_list, "8.19_unrestricted_v2.txt")
+    ut.save_list_to_file_linebyline(single_directional_ip_list, "8.24-8.30_invalid_ip_v2.txt")
+    ut.save_list_to_file_linebyline(restricted_ip_list, "8.24-8.30_restricted_v2.txt")
+    ut.save_list_to_file_linebyline(unrestricted_ip_list, "8.24-8.30_unrestricted_v2.txt")
     print("Done!")
 
 if __name__ == "__main__":
     # python3 classify_endpoint.py -p_v1 "results/8.17_profile_results.txt" -p_v2 "results/8.17_profile_results_v2.json" -p_sf "results/8.17_simplified_profile_results.txt"
     # python3 classify_endpoint.py -p_v2 "results/8.17_profile_results_v2.json" -p_sf "results/8.17_simplified_profile_results_v2.json"
+    # python3 classify_endpoint.py -p_v2 "results/8.17-8.23_profile_results_v2.json" -p_sf "results/8.17-8.23_simplified_profile_results_v2.json"
+    # python3 classify_endpoint.py -p_v2 "results/8.24-8.30_profile_results_v2.json" -p_sf "results/8.24-8.30_simplified_profile_results_v2.json"
+
 
     parser = argparse.ArgumentParser()
     parser.add_argument('-p_v1', type=str, help='The path of profile (v1). For example: \"results/8.17_profile_results.txt\".')
