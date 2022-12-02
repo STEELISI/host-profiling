@@ -130,6 +130,38 @@ def clustering_seaborn(file):
 
     plt.savefig('hierarchical_clustered_heatmap_with_Seaborn_clustermap_python_1st_try.pdf')
 
+
+def load_and_predict(ip_file, spf_file, model_file_name):
+    
+    print("Reading data from files......")
+    dirname = os.path.dirname(__file__)
+    ip_filename = os.path.join(dirname, ip_file)
+    spf_filename = os.path.join(dirname, spf_file)
+    model_filename = os.path.join(dirname, model_file_name)
+
+    model = load(model_filename)
+    ip_list = ut.read_list_from_file_linebyline(ip_filename)
+    spf_dict = ut.dict_read_from_file(spf_filename)
+
+    print("Data loaded!")
+
+    input_data = dict()
+    count = 0
+    for ip in ip_list:
+        # count +=1
+        # print(count)
+        temp_dict = dict()
+        temp_dict = copy.deepcopy(spf_dict[ip][2])
+        input_data[ip] = dict()
+        for i, (k, v) in enumerate(temp_dict.items()):
+            input_data[ip][k] = v[1]
+    
+    print("Number of data points in the dataset: "+str(len(input_data)))
+
+    #################### TODO 
+
+    
+    
 def clustering(ip_file, spf_file, model_file_name, nclusters):
     print("Reading data from files......")
     dirname = os.path.dirname(__file__)
@@ -154,29 +186,32 @@ def clustering(ip_file, spf_file, model_file_name, nclusters):
     
     print("Number of data points in the dataset: "+str(len(input_data)))
 
-    print("Preparing the dataset!")
+    # prepare dataset 
+    print("Preparing the dataset ...")
     dataset = pd.DataFrame.from_dict({i: input_data[i] for i in input_data.keys()}, orient='index')
     dataset = dataset.fillna(0)
     print(dataset)
     print("Dataset done!")
 
-
-    model = AgglomerativeClustering(n_clusters=nclusters, linkage = "ward", affinity = "euclidean")
-    print("Start clustering!")
-    model.fit(dataset)
-    print("Clustering done!")
-    print(model)
-
-    dump(model, model_file_name) 
-
-    # print(dataset.iloc[1361])
-
+    # draw the figure 
+    print("Visualizing ...")
     fig, ax = plt.subplots(figsize=(14, 180))
     plt.title("Dendrograms")  
     dend = shc.dendrogram(shc.linkage(dataset, method='ward', metric='euclidean'), labels = dataset.index, orientation="right")
     plt.tight_layout()
     fig_res_filename = os.path.join(dirname, 'clustering_results/shc_unrestricted_ward_euclidean.pdf')
     plt.savefig(fig_res_filename)
+
+    model = AgglomerativeClustering(n_clusters=nclusters, linkage = "ward", affinity = "euclidean")
+    print("Start clustering ...")
+    model.fit(dataset)
+    print("Clustering done!")
+    print(model)
+
+    dump(model, model_file_name)
+    print("Model saved!")
+
+    # print(dataset.iloc[1361])
 
     # # draw the figure 
     # fig, ax = plt.subplots(figsize=(14, 180))
@@ -190,8 +225,6 @@ def clustering(ip_file, spf_file, model_file_name, nclusters):
     # fig_res_filename = os.path.join(dirname, 'clustering_results/restricted_cosine.pdf')
     # plt.savefig(fig_res_filename)
 
-
-
 if __name__ == "__main__":
     # select_n_sp_randomly(100, "results/8.17_simplified_profile_results.txt", "sampled_100_simplified_profile.txt")
     # select_n_sp_bidirectional_randomly(100, "results/8.17_simplified_profile_results.txt", "sampled_100_simplified_profile.txt")
@@ -199,4 +232,4 @@ if __name__ == "__main__":
     # select_n_ip_randomly(200,"8.17_restricted_ip.txt","200_8.17_restricted_ip.txt")
 
     # clustering_seaborn("sampled_100_simplified_profile.txt")
-    clustering("2000_8.17_unrestricted_ip.txt", "results/8.17_simplified_profile_results.txt", "unrestricted_15.joblib", 15)
+    clustering("2000_8.17_unrestricted_ip.txt", "results/8.17_simplified_profile_results.json", "unrestricted_15.joblib", 15)
