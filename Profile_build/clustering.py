@@ -130,7 +130,7 @@ def clustering_seaborn(file):
 
     plt.savefig('hierarchical_clustered_heatmap_with_Seaborn_clustermap_python_1st_try.pdf')
 
-def clustering(ip_file, spf_file, model_file_name):
+def clustering(ip_file, spf_file, model_file_name, nclusters):
     print("Reading data from files......")
     dirname = os.path.dirname(__file__)
     ip_filename = os.path.join(dirname, ip_file)
@@ -161,7 +161,7 @@ def clustering(ip_file, spf_file, model_file_name):
     print("Dataset done!")
 
 
-    model = AgglomerativeClustering(distance_threshold=0, compute_full_tree=True, compute_distances=True, n_clusters=None, linkage = "ward", affinity = "euclidean")
+    model = AgglomerativeClustering(n_clusters=nclusters, linkage = "ward", affinity = "euclidean")
     print("Start clustering!")
     model.fit(dataset)
     print("Clustering done!")
@@ -199,4 +199,4 @@ if __name__ == "__main__":
     # select_n_ip_randomly(200,"8.17_restricted_ip.txt","200_8.17_restricted_ip.txt")
 
     # clustering_seaborn("sampled_100_simplified_profile.txt")
-    clustering("2000_8.17_unrestricted_ip.txt", "results/8.17_simplified_profile_results.txt", "unrestricted.joblib")
+    clustering("2000_8.17_unrestricted_ip.txt", "results/8.17_simplified_profile_results.txt", "unrestricted_15.joblib", 15)
