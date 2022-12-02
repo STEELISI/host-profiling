@@ -72,7 +72,7 @@ def paint_profile(out_service_matrix_index, normalized_out_service_matrix, out_n
 
     plt.show()
 
-def visual_simplified_profile(file, ip):
+def visual_simplified_profile(file, ip, num_limit = 20):
     dirname = os.path.dirname(__file__)
     filename = os.path.join(dirname, file)
     pf_dict = ut.dict_read_from_file(filename)
@@ -89,6 +89,9 @@ def visual_simplified_profile(file, ip):
     def sort_key(e):
         return e[1]
     result_list.sort(reverse = True, key = sort_key)
+
+    if len(result_list) > 20:
+        result_list = result_list[:num_limit]
 
     # extract labels and proportion numbers 
     labels = [i[0] for i in result_list]
@@ -126,4 +129,6 @@ if __name__ == "__main__":
 
     # visual_simplified_profile("results/8.17_simplified_profile_results.txt", "68.158.58.84")
     # visual_simplified_profile("results/8.17_simplified_profile_results.txt", "14.181.124.20")
-    visual_simplified_profile("results/8.18_simplified_profile_results.txt", "14.14.129.177")
+    ip = "15.82.144.241"
+    visual_simplified_profile("results/8.17-8.23_simplified_profile_results_v2.json", ip)
+    visual_simplified_profile("results/8.24-8.30_simplified_profile_results_v2.json", ip)
